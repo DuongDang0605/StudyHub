@@ -1,0 +1,62 @@
+<!-- fragments/sidebar.html  (include via Thymeleaf th:replace) -->
+<aside class="sidebar" id="sidebar">
+
+  <div class="sidebar-logo">
+    <div class="logo-icon">S</div>
+    <span class="logo-text">StudyHub</span>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    <div class="nav-label">Overview</div>
+    <a class="nav-item" href="/admin/dashboard">
+      <i class="bi bi-grid-1x2-fill"></i> Dashboard
+    </a>
+
+    <div class="nav-label">System</div>
+    <a class="nav-item" href="/admin/settings">
+      <i class="bi bi-sliders"></i> Settings
+    </a>
+    <a class="nav-item" href="/admin/users">
+      <i class="bi bi-people-fill"></i> User Accounts
+    </a>
+
+    <div class="nav-label">Training</div>
+    <a class="nav-item" href="/admin/courses">
+      <i class="bi bi-play-circle-fill"></i> Courses
+    </a>
+    <a class="nav-item" href="/admin/enrollments">
+      <i class="bi bi-journal-check"></i> Enrollments
+      <span class="nav-badge badge bg-warning text-dark">5</span>
+    </a>
+
+    <div class="nav-label">Blog</div>
+    <a class="nav-item" href="/admin/posts">
+      <i class="bi bi-file-earmark-richtext-fill"></i> Posts
+    </a>
+    <a class="nav-item" href="/admin/comments">
+      <i class="bi bi-chat-dots-fill"></i> Comments
+    </a>
+
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="dropdown">
+      <div class="user-card" data-bs-toggle="dropdown">
+        <div class="avatar-circle">A</div>
+        <div style="flex:1;min-width:0">
+          <div class="user-name">Administrator</div>
+          <div class="user-role">Admin</div>
+        </div>
+        <i class="bi bi-three-dots-vertical text-muted" style="font-size:.75rem"></i>
+      </div>
+      <ul class="dropdown-menu shadow border-0" style="border-radius:12px;min-width:170px">
+        <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2"></i>Profile</a></li>
+        <li><a class="dropdown-item" href="/change-password"><i class="bi bi-key me-2"></i>Change Password</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Log Out</a></li>
+      </ul>
+    </div>
+  </div>
+
+</aside>

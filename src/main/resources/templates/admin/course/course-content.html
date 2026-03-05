@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Course Content - StudyHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="/static/css/main.css" rel="stylesheet"/>
+  
+</head>
+<body>
+<div class="app-wrapper">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">S</div>
+      <span class="logo-text">StudyHub</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Overview</div>
+      <a class="nav-item" href="/admin/dashboard"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+      <div class="nav-label">System</div>
+      <a class="nav-item" href="/admin/settings"><i class="bi bi-sliders"></i> Settings</a>
+      <a class="nav-item" href="/admin/users"><i class="bi bi-people-fill"></i> User Accounts</a>
+      <div class="nav-label">Training</div>
+      <a class="nav-item active" href="/admin/courses"><i class="bi bi-play-circle-fill"></i> Courses</a>
+      <a class="nav-item" href="/admin/enrollments"><i class="bi bi-journal-check"></i> Enrollments <span class="nav-badge badge bg-warning text-dark ms-auto">5</span></a>
+      <div class="nav-label">Blog</div>
+      <a class="nav-item" href="/admin/posts"><i class="bi bi-file-earmark-richtext-fill"></i> Posts</a>
+      <a class="nav-item" href="/admin/comments"><i class="bi bi-chat-dots-fill"></i> Comments</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="dropdown">
+        <div class="user-card" data-bs-toggle="dropdown">
+          <div class="avatar-circle">A</div>
+          <div style="flex:1;min-width:0"><div class="user-name">Administrator</div><div class="user-role">Admin</div></div>
+          <i class="bi bi-three-dots-vertical text-muted" style="font-size:.75rem"></i>
+        </div>
+        <ul class="dropdown-menu shadow border-0" style="border-radius:12px;min-width:170px">
+          <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2"></i>Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Log Out</a></li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content">
+
+  <header class="topbar">
+    <button class="topbar-btn" id="sidebarToggle" style="display:flex"><i class="bi bi-list fs-5"></i></button>
+    <div style="flex:1">
+      <div class="topbar-title">Course Content</div>
+      <nav><ol class="breadcrumb mb-0" style="font-size:.72rem">
+        <li class="breadcrumb-item"><a href="/admin/dashboard" class="text-muted"><i class="bi bi-house-fill"></i></a></li>
+        <li class="breadcrumb-item"><a href="/admin/courses" class="text-muted">Courses</a></li><li class="breadcrumb-item active text-muted">Content</li>
+      </ol></nav>
+    </div>
+    <div class="dropdown">
+      <button class="topbar-btn" data-bs-toggle="dropdown"><i class="bi bi-bell-fill"></i><span class="notif-dot"></span></button>
+      <div class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="width:270px;border-radius:14px">
+        <div class="px-2 pb-2 border-bottom mb-1"><strong style="font-size:.82rem">Notifications</strong></div>
+        <a class="dropdown-item rounded-3 py-2" href="#"><span style="font-size:.8rem">5 enrollments pending</span></a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <div class="avatar-circle" data-bs-toggle="dropdown" style="cursor:pointer;border:2px solid var(--primary-light)">A</div>
+      <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius:12px;min-width:170px;margin-top:6px">
+        <li class="px-3 py-2 border-bottom"><div style="font-weight:700;font-size:.82rem">Administrator</div></li>
+        <li><a class="dropdown-item mt-1" href="/profile"><i class="bi bi-person me-2"></i>Profile</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Log Out</a></li>
+      </ul>
+    </div>
+  </header>
+    <main class="page-body">
+
+      <div class="row g-4">
+        <!-- Left: info -->
+        <div class="col-12 col-lg-4">
+          <div class="card-sh mb-3">
+            <div class="card-header-sh"><h6 class="card-title-sh"><i class="bi bi-info-circle-fill me-2 text-primary"></i>Course Info</h6></div>
+            <div class="card-body-sh">
+              <dl class="row mb-0" style="font-size:.86rem">
+                <dt class="col-5 text-muted fw-normal">Title</dt><dd class="col-7 fw-semibold">Course số 2</dd>
+                <dt class="col-5 text-muted fw-normal">Category</dt><dd class="col-7">Data Science</dd>
+                <dt class="col-5 text-muted fw-normal">Instructor</dt><dd class="col-7">Kien Nguyen</dd>
+                <dt class="col-5 text-muted fw-normal">Level</dt><dd class="col-7"><span class="badge-sh bs-beginner">BEGINNER</span></dd>
+                <dt class="col-5 text-muted fw-normal">Price</dt><dd class="col-7">$15.00</dd>
+                <dt class="col-5 text-muted fw-normal">Status</dt><dd class="col-7"><span class="badge-sh bs-published">Published</span></dd>
+              </dl>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <a href="/admin/courses" class="btn btn-outline-secondary flex-fill"><i class="bi bi-arrow-left me-1"></i>Courses</a>
+            <a href="/admin/courses/2/chapters/new" class="btn btn-success flex-fill"><i class="bi bi-plus-lg me-1"></i>Add Chapter</a>
+          </div>
+        </div>
+        <!-- Right: content tree -->
+        <div class="col-12 col-lg-8">
+          <div class="card-sh">
+            <div class="card-header-sh"><h6 class="card-title-sh"><i class="bi bi-collection-play-fill me-2 text-primary"></i>Course Content</h6></div>
+            <div class="card-body-sh">
+
+              <!-- Chapter 1 -->
+              <div class="border rounded-3 mb-3" style="border-color:var(--primary-light)!important">
+                <div class="d-flex align-items-center gap-2 p-3" style="background:var(--primary-subtle);border-radius:10px 10px 0 0">
+                  <i class="bi bi-book-fill text-primary"></i>
+                  <span style="font-weight:700;font-size:.9rem;flex:1">Chapter 1: Chương 2.1 – Tổng quan</span>
+                  <a href="/admin/courses/2/chapters/1/lessons/new" class="btn btn-success btn-sm"><i class="bi bi-plus-lg me-1"></i>Add Lesson</a>
+                  <a href="/admin/courses/2/chapters/1" class="btn btn-primary btn-icon btn-sm"><i class="bi bi-pencil-fill"></i></a>
+                  <button class="btn btn-danger btn-icon btn-sm" data-confirm="Delete chapter?"><i class="bi bi-trash-fill"></i></button>
+                </div>
+                <div class="p-3 pt-2" style="font-size:.82rem;color:var(--text-muted);border-bottom:1px solid var(--border)">Mô tả tổng quan bài học</div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 px-3 py-2 border-bottom">
+                    <i class="bi bi-camera-video-fill text-info" style="font-size:.9rem"></i>
+                    <span style="font-size:.85rem;flex:1">1. Bài học tổng quan 2.1.1 <span class="text-muted">(VIDEO)</span></span>
+                    <a href="/admin/courses/2/lessons/1" class="btn btn-primary btn-icon btn-sm"><i class="bi bi-pencil-fill"></i></a>
+                    <button class="btn btn-danger btn-icon btn-sm"><i class="bi bi-trash-fill"></i></button>
+                  </div>
+                  <div class="d-flex align-items-center gap-2 px-3 py-2 border-bottom">
+                    <i class="bi bi-file-earmark-pdf-fill text-danger" style="font-size:.9rem"></i>
+                    <span style="font-size:.85rem;flex:1">2. Bài học PDF updated6 <span class="text-muted">(PDF)</span></span>
+                    <a href="/admin/courses/2/lessons/2" class="btn btn-primary btn-icon btn-sm"><i class="bi bi-pencil-fill"></i></a>
+                    <button class="btn btn-danger btn-icon btn-sm"><i class="bi bi-trash-fill"></i></button>
+                  </div>
+                  <div class="d-flex align-items-center gap-2 px-3 py-2">
+                    <i class="bi bi-camera-video-fill text-info" style="font-size:.9rem"></i>
+                    <span style="font-size:.85rem;flex:1">3. Bài học YouTube2 <span class="text-muted">(VIDEO • 30 min)</span></span>
+                    <a href="/admin/courses/2/lessons/3" class="btn btn-primary btn-icon btn-sm"><i class="bi bi-pencil-fill"></i></a>
+                    <button class="btn btn-danger btn-icon btn-sm"><i class="bi bi-trash-fill"></i></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Chapter 2 -->
+              <div class="border rounded-3" style="border-color:var(--primary-light)!important">
+                <div class="d-flex align-items-center gap-2 p-3" style="background:var(--primary-subtle);border-radius:10px 10px 0 0">
+                  <i class="bi bi-book-fill text-primary"></i>
+                  <span style="font-weight:700;font-size:.9rem;flex:1">Chapter 2: Chương 2.2 – Nội dung chi tiết đầu</span>
+                  <a href="/admin/courses/2/chapters/2/lessons/new" class="btn btn-success btn-sm"><i class="bi bi-plus-lg me-1"></i>Add Lesson</a>
+                  <a href="/admin/courses/2/chapters/2" class="btn btn-primary btn-icon btn-sm"><i class="bi bi-pencil-fill"></i></a>
+                  <button class="btn btn-danger btn-icon btn-sm"><i class="bi bi-trash-fill"></i></button>
+                </div>
+                <div class="p-3 pt-2" style="font-size:.82rem;color:var(--text-muted);border-bottom:1px solid var(--border)">Mô tả chương nội dung chi tiết đầu</div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 px-3 py-2 border-bottom">
+                    <i class="bi bi-file-earmark-text-fill text-success" style="font-size:.9rem"></i>
+                    <span style="font-size:.85rem;flex:1">1. Bài 2.2.1 – Nội dung rich text <span class="text-muted">(TEXT)</span></span>
+                    <a href="/admin/courses/2/lessons/4" class="btn btn-primary btn-icon btn-sm"><i class="bi bi-pencil-fill"></i></a>
+                    <button class="btn btn-danger btn-icon btn-sm"><i class="bi bi-trash-fill"></i></button>
+                  </div>
+                  <div class="d-flex align-items-center gap-2 px-3 py-2">
+                    <i class="bi bi-file-earmark-pdf-fill text-danger" style="font-size:.9rem"></i>
+                    <span style="font-size:.85rem;flex:1">2. Bài học PDF #2 <span class="text-muted">(PDF)</span></span>
+                    <a href="/admin/courses/2/lessons/5" class="btn btn-primary btn-icon btn-sm"><i class="bi bi-pencil-fill"></i></a>
+                    <button class="btn btn-danger btn-icon btn-sm"><i class="bi bi-trash-fill"></i></button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+  <footer class="app-footer">
+    <span>StudyHub v1 &copy; 2026</span>
+    <span>Contact: <a href="mailto:contact@studyhub.com" style="color:var(--primary)">contact@studyhub.com</a></span>
+  </footer>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/js/app.js"></script>
+
+</body>
+</html>
