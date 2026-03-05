@@ -7,47 +7,43 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-@Table(name = "comment")
+@Table(name = "chapter")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Comment {
+public class Chapter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_id")
+    @Column(name = "chapter_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @JoinColumn(name = "course_id", nullable = false)
+    private Course course;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "title", length = 255, nullable = false)
+    private String title;
 
-    // Self-reference: NULL = root comment; non-null = reply to a comment/reply
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    private Comment parent;
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Comment> replies;
+    @Column(name = "order_num", nullable = false)
+    private Integer orderNum = 1;
 
-    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
-    private String content;
-
-    // ACTIVE, DELETED
     @Column(name = "status", nullable = false, length = 20)
-    private String status = "ACTIVE";
+    private String status = "ACTIVE"; // ACTIVE, INACTIVE
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Lesson> lessons;
 
     @PrePersist
     protected void onCreate() {
