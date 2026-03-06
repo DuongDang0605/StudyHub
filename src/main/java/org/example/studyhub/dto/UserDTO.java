@@ -3,6 +3,7 @@ package org.example.studyhub.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,4 +21,6 @@ public class UserDTO {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<String> roles;
+    private List<Long> roleIds;
 }

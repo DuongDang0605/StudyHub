@@ -23,7 +23,12 @@ public class UserMapper {
         dto.setStatus(user.getStatus());
         dto.setCreatedAt(user.getCreatedAt());
         dto.setUpdatedAt(user.getUpdatedAt());
-
+        if (user.getUserRoles() != null) {
+            List<String> roleNames = user.getUserRoles().stream()
+                    .map(ur -> ur.getRole().getName())
+                    .collect(Collectors.toList());
+            dto.setRoles(roleNames);
+        }
         return dto;
     }
 
