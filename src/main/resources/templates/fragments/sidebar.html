@@ -1,62 +1,22 @@
-<!-- fragments/sidebar.html  (include via Thymeleaf th:replace) -->
-<aside class="sidebar" id="sidebar">
-
-  <div class="sidebar-logo">
-    <div class="logo-icon">S</div>
-    <span class="logo-text">StudyHub</span>
+<aside th:fragment="sidebar" class="bg-dark text-white vh-100 p-3" style="width: 260px; position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 1000;">
+  <div class="text-center py-3 mb-3 border-bottom border-secondary">
+    <h4 class="fw-bold m-0 text-white tracking-wide">Admin Panel</h4>
   </div>
-
-  <nav class="sidebar-nav">
-
-    <div class="nav-label">Overview</div>
-    <a class="nav-item" href="/admin/dashboard">
-      <i class="bi bi-grid-1x2-fill"></i> Dashboard
+  <nav class="nav flex-column gap-2">
+    <a class="nav-link text-white-50 hover-white py-2" th:href="@{/admin/dashboard}">
+      <i class="bi bi-grid-1x2-fill me-2"></i> Dashboard
     </a>
-
-    <div class="nav-label">System</div>
-    <a class="nav-item" href="/admin/settings">
-      <i class="bi bi-sliders"></i> Settings
+    <a class="nav-link text-white bg-primary rounded py-2 active" th:href="@{/users/list}">
+      <i class="bi bi-people-fill me-2"></i> User Management
     </a>
-    <a class="nav-item" href="/admin/users">
-      <i class="bi bi-people-fill"></i> User Accounts
+    <a class="nav-link text-white-50 hover-white py-2" th:href="@{/admin/courses}">
+      <i class="bi bi-play-btn-fill me-2"></i> Courses
     </a>
-
-    <div class="nav-label">Training</div>
-    <a class="nav-item" href="/admin/courses">
-      <i class="bi bi-play-circle-fill"></i> Courses
+    <a class="nav-link text-white-50 hover-white py-2" th:href="@{/admin/posts}">
+      <i class="bi bi-file-earmark-text-fill me-2"></i> Blogs
     </a>
-    <a class="nav-item" href="/admin/enrollments">
-      <i class="bi bi-journal-check"></i> Enrollments
-      <span class="nav-badge badge bg-warning text-dark">5</span>
+    <a class="nav-link text-white-50 hover-white py-2 mt-4" th:href="@{/admin/settings}">
+      <i class="bi bi-gear-fill me-2"></i> Settings
     </a>
-
-    <div class="nav-label">Blog</div>
-    <a class="nav-item" href="/admin/posts">
-      <i class="bi bi-file-earmark-richtext-fill"></i> Posts
-    </a>
-    <a class="nav-item" href="/admin/comments">
-      <i class="bi bi-chat-dots-fill"></i> Comments
-    </a>
-
   </nav>
-
-  <div class="sidebar-bottom">
-    <div class="dropdown">
-      <div class="user-card" data-bs-toggle="dropdown">
-        <div class="avatar-circle">A</div>
-        <div style="flex:1;min-width:0">
-          <div class="user-name">Administrator</div>
-          <div class="user-role">Admin</div>
-        </div>
-        <i class="bi bi-three-dots-vertical text-muted" style="font-size:.75rem"></i>
-      </div>
-      <ul class="dropdown-menu shadow border-0" style="border-radius:12px;min-width:170px">
-        <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2"></i>Profile</a></li>
-        <li><a class="dropdown-item" href="/change-password"><i class="bi bi-key me-2"></i>Change Password</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Log Out</a></li>
-      </ul>
-    </div>
-  </div>
-
 </aside>

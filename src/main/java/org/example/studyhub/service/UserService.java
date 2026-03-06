@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface UserService {
-    List<UserDTO> getAllUsers();
     Page<UserDTO> searchUsers(Long roleId, String status, String keyword, int page, int size);
 
 

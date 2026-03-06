@@ -1,4 +1,4 @@
-package org.example.studyhub.reponsitory;
+package org.example.studyhub.repository;
 
 import org.example.studyhub.model.Lesson;
 import org.springframework.data.jpa.repository.JpaRepository;
