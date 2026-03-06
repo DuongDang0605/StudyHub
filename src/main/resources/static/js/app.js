@@ -1,64 +1,70 @@
-// =============================================
-//  StudyHub - app.js
-// =============================================
+// Biến toàn cục để lưu lại thông tin trước khi call AJAX
+let pendingAjaxUrl = '';
+let pendingAjaxData = {};
 
-document.addEventListener('DOMContentLoaded', () => {
+/**
+ * Hiển thị Toast thông báo
+ * @param {string} message - Nội dung thông báo
+ * @param {string} type - 'success' hoặc 'error'
+ */
+function showToast(message, type) {
+  const toastEl = document.getElementById('globalToast');
+  const toastMessage = document.getElementById('globalToastMessage');
 
-  // ----- Sidebar toggle (mobile) -----
-  const toggle  = document.getElementById('sidebarToggle');
-  const sidebar = document.getElementById('sidebar');
-  if (toggle && sidebar) {
-    toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-    document.addEventListener('click', e => {
-      if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== toggle) {
-        sidebar.classList.remove('open');
-      }
-    });
-  }
+  toastMessage.innerHTML = type === 'success'
+      ? `<i class="bi bi-check-circle-fill me-2"></i>${message}`
+      : `<i class="bi bi-x-circle-fill me-2"></i>${message}`;
 
-  // ----- Auto-init Bootstrap toasts -----
-  document.querySelectorAll('.toast').forEach(el => {
-    new bootstrap.Toast(el, { delay: 4000 }).show();
-  });
+  // Đổi màu nền dựa theo type
+  toastEl.classList.remove('bg-success', 'bg-danger');
+  toastEl.classList.add(type === 'success' ? 'bg-success' : 'bg-danger');
 
-  // ----- Active nav highlight -----
-  const path = window.location.pathname;
-  document.querySelectorAll('.nav-item[data-href]').forEach(el => {
-    if (path.startsWith(el.dataset.href)) el.classList.add('active');
-  });
+  const toast = new bootstrap.Toast(toastEl);
+  toast.show();
+}
 
-  // ----- Confirm delete -----
-  document.querySelectorAll('[data-confirm]').forEach(el => {
-    el.addEventListener('click', e => {
-      if (!confirm(el.dataset.confirm || 'Are you sure?')) e.preventDefault();
-    });
-  });
+/**
+ * Gọi hàm này từ HTML khi bấm nút Xóa/Khóa
+ */
+function confirmAction(message, url, data) {
+  // 1. Gắn câu hỏi vào Modal
+  document.getElementById('globalConfirmMessage').innerText = message;
 
-  // ----- Password toggle -----
-  document.querySelectorAll('.pwd-toggle').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const inp = document.querySelector(btn.dataset.target);
-      const ico = btn.querySelector('i');
-      if (!inp) return;
-      inp.type = inp.type === 'password' ? 'text' : 'password';
-      ico.className = inp.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
-    });
-  });
+  // 2. Lưu lại url và data chuẩn bị cho AJAX
+  pendingAjaxUrl = url;
+  pendingAjaxData = data;
 
-  // ----- Image preview on file choose -----
-  document.querySelectorAll('.img-pick').forEach(inp => {
-    inp.addEventListener('change', () => {
-      const preview = document.querySelector(inp.dataset.preview);
-      if (preview && inp.files[0]) {
-        preview.src = URL.createObjectURL(inp.files[0]);
-      }
-    });
-  });
+  // 3. Mở pop-up lên
+  const modal = new bootstrap.Modal(document.getElementById('globalConfirmModal'));
+  modal.show();
+}
 
-  // ----- Table row clickable -----
-  document.querySelectorAll('tr[data-href]').forEach(row => {
-    row.style.cursor = 'pointer';
-    row.addEventListener('click', () => window.location.href = row.dataset.href);
-  });
+// Lắng nghe sự kiện click vào nút "Yes, proceed" trong Modal
+document.getElementById('btnGlobalConfirm').addEventListener('click', function() {
+  // 1. Tắt pop-up
+  const modalEl = document.getElementById('globalConfirmModal');
+  bootstrap.Modal.getInstance(modalEl).hide();
 
+  // 2. Thực thi AJAX (Sử dụng Fetch API của trình duyệt)
+  fetch(pendingAjaxUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    // Chuyển object thành chuỗi x-www-form-urlencoded (vd: status=INACTIVE)
+    body: new URLSearchParams(pendingAjaxData)
+  })
+      .then(response => {
+        if(response.ok) {
+          showToast("Action completed successfully!", "success");
+          // Reload lại giao diện sau 1 giây để cập nhật bảng mới nhất
+          setTimeout(() => window.location.reload(), 1000);
+        } else {
+          showToast("Failed to perform action. Server error.", "error");
+        }
+      })
+      .catch(error => {
+        console.error("AJAX Error:", error);
+        showToast("Network error occurred.", "error");
+      });
 });
