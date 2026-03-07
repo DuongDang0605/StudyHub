@@ -16,4 +16,9 @@ public interface UserService {
     UserDTO updateUser(Long id, UserDTO userDTO);
 
     void changeStatus(Long id, String status);
+
+    User authenticate(String email, String password);
+    void resendVerificationEmail(String email);
+    boolean validateVerificationToken(String token);
+    void verifyAndSetupPassword(String token, String newPassword);
 }
