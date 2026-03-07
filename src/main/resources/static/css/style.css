@@ -4,12 +4,6 @@
     --secondary: #191C24;
     --light: #6C7293;
     --dark: #000000;
-/* Custom Styles để khớp với hình ảnh */
-
-/* Font và màu sắc nền tảng */
-body {
-    background-color: #f8f9fc;
-    color: #5a5c69;
 }
 
 .back-to-top {
@@ -101,27 +95,13 @@ body {
     .content {
         width: calc(100% - 250px);
     }
-/* Tùy chỉnh Sidebar */
-aside {
-    background-color: #4e73df; /* Bạn có thể đổi lại màu đen xám như hình #2c3e50 */
-    background-image: linear-gradient(180deg, #2c3e50 10%, #1a1a1a 100%);
-}
 
     .content.open {
         width: 100%;
         margin-left: 0;
     }
-/* Tùy chỉnh hiệu ứng cho bảng */
-table thead th {
-    background-color: #f8f9fc;
-    text-transform: capitalize;
-    letter-spacing: 0.05em;
 }
 
-/* Custom Status Badge */
-.bg-green-500 {
-    background-color: #1cc88a !important; /* Màu xanh lá đặc trưng trong hình */
-}
 @media (max-width: 991.98px) {
     .sidebar {
         margin-left: -250px;
@@ -130,10 +110,6 @@ table thead th {
     .sidebar.open {
         margin-left: 0;
     }
-/* Shadow cho các Card */
-.shadow-sm {
-    box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15) !important;
-}
 
     .content {
         width: 100%;
@@ -162,8 +138,6 @@ table thead th {
 .sidebar .navbar .navbar-nav .nav-link i {
     width: 40px;
     height: 40px;
-/* Căn chỉnh icon Action giống hệt nút trong hình */
-.btn-action {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -312,7 +286,4 @@ table thead th {
 .testimonial-carousel .owl-dot.active {
     background: var(--dark);
     border-color: var(--primary);
-    width: 28px;
-    height: 28px;
-    transition: all 0.2s;
 }
