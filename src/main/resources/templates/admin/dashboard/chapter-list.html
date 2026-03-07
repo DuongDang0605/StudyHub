@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chapter List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+<div class="max-w-6xl mx-auto">
+    <div class="mb-6">
+        <nav class="text-sm text-gray-500 mb-2">
+            <a th:href="@{/admin}" class="hover:underline">Dashboard</a> /
+            <span th:text="${course.title}"></span> / Chapters
+        </nav>
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">Chapters Management</h1>
+            <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                <i class="fas fa-plus mr-2"></i>Add New Chapter
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-gray-800 text-white text-sm">
+            <tr>
+                <th class="p-4 w-16">Order</th>
+                <th class="p-4">Chapter Title</th>
+                <th class="p-4">Description</th>
+                <th class="p-4">Status</th>
+                <th class="p-4 text-center">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="text-sm">
+            <tr th:each="chapter : ${chapters}" class="border-b hover:bg-gray-50">
+                <td class="p-4 font-bold text-gray-500" th:text="${chapter.orderNum}">1</td>
+                <td class="p-4 font-semibold text-gray-800" th:text="${chapter.title}">Introduction</td>
+                <td class="p-4 text-gray-600 truncate max-w-xs" th:text="${chapter.description}">Description...</td>
+                <td class="p-4">
+                            <span th:text="${chapter.status}"
+                                  th:class="${chapter.status == 'ACTIVE' ? 'text-green-600' : 'text-red-600'} + ' font-bold'">
+                            </span>
+                </td>
+                <td class="p-4 text-center">
+                    <div class="flex justify-center space-x-2">
+                        <a href="#" class="text-blue-600 hover:text-blue-900"><i class="fas fa-edit"></i></a>
+                        <a href="#" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i></a>
+                        <a th:href="@{/admin/chapters/{id}/lessons(id=${chapter.id})}" class="text-gray-600 hover:text-black">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(chapters)}">
+                <td colspan="5" class="p-8 text-center text-gray-500">No chapters found for this course.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4">
+        <a th:href="@{/admin}" class="text-blue-600 hover:underline">
+            <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+</body>
+</html>
