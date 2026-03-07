@@ -12,4 +12,5 @@ public interface SettingRepository extends JpaRepository<Setting, Long> {
     List<Setting> getAllRoles();
 
     List<Setting> findByTypeIdAndStatus(Long typeId, String status);
+
 }
