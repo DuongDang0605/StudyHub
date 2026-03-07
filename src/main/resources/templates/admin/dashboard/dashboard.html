@@ -1,116 +1,65 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Learning Admin - Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <meta charset="utf-8">
+  <title>Admin Dashboard</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="" name="keywords">
+  <meta content="" name="description">
+
+  <link th:href="@{/img/favicon.ico}" rel="icon">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+  <link th:href="@{/lib/owlcarousel/assets/owl.carousel.min.css}" rel="stylesheet">
+  <link th:href="@{/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css}" rel="stylesheet" />
+
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
+  <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
-<body class="bg-gray-100 font-sans">
 
-<div class="flex min-h-screen w-full">
-  <div th:replace="~{admin/dashboard/sidebar :: sidebar}"></div>
+<body>
+<div class="container-fluid position-relative d-flex p-0">
+  <div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+    <!--        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">-->
+    <!--            <span class="sr-only">Loading...</span>-->
+    <!--        </div>-->
+  </div>
+  <div th:replace="~{fragments/sidebar-admin :: sidebar}"></div>
 
-  <main class="flex-1 flex flex-col min-w-0"> <header class="bg-[#1a1a1a] text-white p-3 flex justify-between items-center shadow-md sticky top-0 z-10">
-    <button onclick="toggleSidebar()" class="p-2 hover:bg-gray-800 rounded">
-      <i class="fas fa-bars"></i>
-    </button>
-  </header>
+  <div class="content">
+    <div th:replace="~{fragments/header :: header}"></div>
 
-    <div class="p-8">
-      <h1 class="text-3xl font-semibold mb-8 text-gray-800">Dashboard</h1>
-
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-blue-400 flex justify-between items-center">
-          <div>
-            <p class="text-xs font-bold text-blue-500 uppercase">Total Users</p>
-            <h2 class="text-2xl font-bold" th:text="${totalUsers}">4</h2>
-          </div>
-          <i class="fas fa-users text-3xl text-gray-300"></i>
-        </div>
-        <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-green-400 flex justify-between items-center">
-          <div>
-            <p class="text-xs font-bold text-green-500 uppercase">Total Courses</p>
-            <h2 class="text-2xl font-bold" th:text="${totalCourses}">7</h2>
-          </div>
-          <i class="fas fa-book-open text-3xl text-gray-300"></i>
-        </div>
-        <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-indigo-400 flex justify-between items-center">
-          <div>
-            <p class="text-xs font-bold text-indigo-500 uppercase">Published Posts</p>
-            <h2 class="text-2xl font-bold" th:text="${publishedPostsCount}">2</h2>
-          </div>
-          <i class="fas fa-user-graduate text-3xl text-gray-300"></i>
-        </div>
-        <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-yellow-400 flex justify-between items-center">
-          <div>
-            <p class="text-xs font-bold text-yellow-500 uppercase">Published Courses</p>
-            <h2 class="text-2xl font-bold" th:text="${publishedCoursesCount}">7</h2>
-          </div>
-          <i class="fas fa-check-circle text-3xl text-gray-300"></i>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-sm">
-        <div class="p-4 border-b border-gray-100">
-          <h3 class="text-blue-500 font-bold text-sm">Recent Courses</h3>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
-            <thead>
-            <tr class="text-gray-700 text-sm border-b">
-              <th class="p-4 font-semibold">Title</th>
-              <th class="p-4 font-semibold">Instructor</th>
-              <th class="p-4 font-semibold">Category</th>
-              <th class="p-4 font-semibold">Status</th>
-              <th class="p-4 font-semibold">Created</th>
-              <th class="p-4 font-semibold text-center">Actions</th>
-            </tr>
-            </thead>
-            <tbody class="text-sm text-gray-600">
-            <tr th:each="course : ${recentCourses}" class="border-b hover:bg-gray-50 transition">
-              <td class="p-4 font-medium text-gray-800" th:text="${course.title}">AI Automation...</td>
-              <td class="p-4" th:text="${course.instructor.fullName}">Kien Nguyen8</td>
-              <td class="p-4" th:text="${course.category.name}">Programming</td>
-              <td class="p-4">
-                                        <span th:classappend="${course.status == 'PUBLISHED' ? 'bg-green-500' : 'bg-gray-400'}"
-                                              class="text-white text-[10px] px-2 py-1 rounded font-bold"
-                                              th:text="${course.status}">
-                                            PUBLISHED
-                                        </span>
-              </td>
-              <td class="p-4 text-xs" th:text="${#temporals.format(course.createdAt, 'yyyy-MM-dd HH:mm:ss.SSSSSS')}"></td>
-              <td class="p-4 text-center flex justify-center space-x-2">
-                <a th:href="@{/admin/edit/{id}(id=${course.id})}"
-                   class="bg-blue-600 text-white w-8 h-8 rounded flex items-center justify-center hover:bg-blue-700 transition"
-                   title="Update Course">
-                  <i class="fas fa-edit text-xs"></i>
-                </a>
-
-                <a th:href="@{/admin/{id}/chapters(id=${course.id})}"
-                   class="bg-cyan-500 text-white w-8 h-8 rounded flex items-center justify-center hover:bg-cyan-600 transition"
-                   title="View Chapters">
-                  <i class="fas fa-list text-xs"></i>
-                </a>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
+    <div class="container-fluid pt-4 px-4">
+      <div class="bg-secondary rounded p-4 h-100">
+        <h4 class="mb-4">Chào mừng đến với hệ thống quản lý!</h4>
+        <p>Nội dung các bảng biểu, biểu đồ, danh sách khóa học sẽ được nhúng vào khu vực này.</p>
       </div>
     </div>
-      <footer class="p-6 border-t border-gray-200 text-sm text-gray-500 bg-white">
-        <div class="flex justify-between items-center">
-          <div>StudyHub v1 - Copyright @2026</div>
-          <div>Contact: 0912345678 - contact@studyhub.com</div>
-        </div>
-      </footer>
 
-  </main>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+  </div>
+  <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 </div>
-<div th:replace="~{admin/dashboard/sidebar :: sidebar-script}"></div>
 
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/lib/chart/chart.min.js}"></script>
+<script th:src="@{/lib/easing/easing.min.js}"></script>
+<script th:src="@{/lib/waypoints/waypoints.min.js}"></script>
+<script th:src="@{/lib/owlcarousel/owl.carousel.min.js}"></script>
+<script th:src="@{/lib/tempusdominus/js/moment.min.js}"></script>
+<script th:src="@{/lib/tempusdominus/js/moment-timezone.min.js}"></script>
+<script th:src="@{/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<script th:src="@{/js/main.js}"></script>
 </body>
+
 </html>

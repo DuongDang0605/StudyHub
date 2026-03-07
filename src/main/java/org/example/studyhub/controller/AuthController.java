@@ -51,7 +51,7 @@ public class AuthController {
         }
 
         session.setAttribute("loggedInUser", user);
-        return "redirect:/users/list";
+        return "redirect:/home";
     }
 
     @PostMapping("/resend-verification")
