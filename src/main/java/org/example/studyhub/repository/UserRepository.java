@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -33,6 +34,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     );
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
+
+    @Query("SELECT u FROM User u JOIN u.userRoles ur WHERE ur.role.name = :roleName AND u.status = 'ACTIVE'")
+    List<User> findAllByRoleName(@Param("roleName") String roleName);
     Optional<User> findByEmail(String email);
     Optional<User> findByEmailVerifyToken(String token);
 }
