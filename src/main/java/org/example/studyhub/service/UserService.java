@@ -10,8 +10,15 @@ public interface UserService {
     Page<UserDTO> searchUsers(Long roleId, String status, String keyword, int page, int size);
 
     UserDTO getUserById(Long id);
+
     UserDTO createUser(UserDTO userDTO);
+
     UserDTO updateUser(Long id, UserDTO userDTO);
+
     void changeStatus(Long id, String status);
 
+    User authenticate(String email, String password);
+    void resendVerificationEmail(String email);
+    boolean validateVerificationToken(String token);
+    void verifyAndSetupPassword(String token, String newPassword);
 }

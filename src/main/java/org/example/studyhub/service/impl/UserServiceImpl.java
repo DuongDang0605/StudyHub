@@ -1,22 +1,22 @@
 package org.example.studyhub.service.impl;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.example.studyhub.dto.UserDTO;
 import org.example.studyhub.mapper.UserMapper;
 import org.example.studyhub.model.User;
 import org.example.studyhub.model.UserRole;
 import org.example.studyhub.repository.SettingRepository;
 import org.example.studyhub.repository.UserRepository;
+import org.example.studyhub.service.EmailService;
 import org.example.studyhub.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -27,6 +27,10 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Autowired
     private SettingRepository settingRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public Page<UserDTO> searchUsers(Long roleId, String status, String keyword, int page, int size) {
@@ -86,12 +90,27 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userMapper.toEntity(userDTO);
-
-        user.setPassword("123");
+        String rawPassword = generateRandomPassword(8);
+        user.setPassword(passwordEncoder.encode(rawPassword));
         user.setStatus("UNVERIFIED");
 
         user = userRepository.save(user);
+        try {
+            emailService.sendNewAccountEmail(user.getEmail(), user.getUsername(), rawPassword);
+        } catch (Exception e) {
+            System.err.println("Lỗi khi gửi email: " + e.getMessage());
+        }
         return userMapper.toDTO(user);
+    }
+
+    private String generateRandomPassword(int length) {
+        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
 
     @Override
@@ -146,6 +165,75 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
 
         user.setStatus(status.toUpperCase());
+        userRepository.save(user);
+    }
+
+    @Override
+    public User authenticate(String email, String password) {
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            return null;
+        }
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            return user;
+        }
+        else if (password.equals(user.getPassword())) {
+
+            user.setPassword(passwordEncoder.encode(password));
+            userRepository.save(user);
+
+            System.out.println("Đã tự động mã hóa mật khẩu cho user: " + email);
+            return user;
+        }
+
+        return null;
+    }
+
+    @Override
+    public void resendVerificationEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản với email này."));
+
+        if (!"UNVERIFIED".equals(user.getStatus())) {
+            throw new IllegalArgumentException("Tài khoản này đã được xác thực hoặc bị khóa.");
+        }
+
+        String token = UUID.randomUUID().toString();
+        user.setEmailVerifyToken(token);
+        user.setEmailVerifyExpiredAt(LocalDateTime.now().plusHours(24));
+        userRepository.save(user);
+
+        // Gửi email
+        emailService.sendVerificationEmail(user.getEmail(), token);
+    }
+
+    @Override
+    public boolean validateVerificationToken(String token) {
+        User user = userRepository.findByEmailVerifyToken(token).orElse(null);
+        if (user == null) return false;
+
+        if (user.getEmailVerifyExpiredAt() == null || user.getEmailVerifyExpiredAt().isBefore(LocalDateTime.now())) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void verifyAndSetupPassword(String token, String newPassword) {
+        User user = userRepository.findByEmailVerifyToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Token không hợp lệ hoặc không tồn tại."));
+
+        if (user.getEmailVerifyExpiredAt() == null || user.getEmailVerifyExpiredAt().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Đường link xác thực đã hết hạn.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setStatus("ACTIVE");
+
+        user.setEmailVerifyToken(null);
+        user.setEmailVerifyExpiredAt(null);
+
         userRepository.save(user);
     }
 }

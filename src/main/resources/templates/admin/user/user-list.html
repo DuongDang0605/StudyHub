@@ -128,7 +128,9 @@
                                 </a>
 
                                 <button type="button" class="btn-action btn-delete" title="Deactivate"
-                                        th:onclick="'confirmAction(\'Are you sure you want to deactivate ' + ${user.fullName} + '?\', \'/users/' + ${user.id} + '/status\', {status: \'INACTIVE\'})'">
+                                        th:data-fullname="${user.fullName}"
+                                        th:data-url="@{/users/{id}/status(id=${user.id})}"
+                                        onclick="confirmAction('Are you sure you want to deactivate ' + this.getAttribute('data-fullname') + '?', this.getAttribute('data-url'), {status: 'INACTIVE'})">
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
                             </div>
