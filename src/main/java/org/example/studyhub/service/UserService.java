@@ -10,8 +10,10 @@ public interface UserService {
     Page<UserDTO> searchUsers(Long roleId, String status, String keyword, int page, int size);
 
     UserDTO getUserById(Long id);
-    UserDTO createUser(UserDTO userDTO);
-    UserDTO updateUser(Long id, UserDTO userDTO);
-    void changeStatus(Long id, String status);
 
+    UserDTO createUser(UserDTO userDTO);
+
+    UserDTO updateUser(Long id, UserDTO userDTO);
+
+    void changeStatus(Long id, String status);
 }

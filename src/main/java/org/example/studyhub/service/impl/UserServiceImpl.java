@@ -8,14 +8,17 @@ import org.example.studyhub.model.User;
 import org.example.studyhub.model.UserRole;
 import org.example.studyhub.repository.SettingRepository;
 import org.example.studyhub.repository.UserRepository;
+import org.example.studyhub.service.EmailService;
 import org.example.studyhub.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.List;
 
 @Service
@@ -27,6 +30,10 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Autowired
     private SettingRepository settingRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public Page<UserDTO> searchUsers(Long roleId, String status, String keyword, int page, int size) {
@@ -86,12 +93,27 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userMapper.toEntity(userDTO);
-
-        user.setPassword("123");
+        String rawPassword = generateRandomPassword(8);
+        user.setPassword(passwordEncoder.encode(rawPassword));
         user.setStatus("UNVERIFIED");
 
         user = userRepository.save(user);
+        try {
+            emailService.sendNewAccountEmail(user.getEmail(), user.getUsername(), rawPassword);
+        } catch (Exception e) {
+            System.err.println("Lỗi khi gửi email: " + e.getMessage());
+        }
         return userMapper.toDTO(user);
+    }
+
+    private String generateRandomPassword(int length) {
+        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
 
     @Override
