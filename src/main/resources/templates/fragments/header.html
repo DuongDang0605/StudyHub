@@ -8,19 +8,15 @@
         <a th:href="@{/admin/dashboard}" class="nav-link-custom">
           <i class="bi bi-grid-1x2-fill me-1"></i> Dashboard
         </a>
-
         <a th:href="@{/users/list}" class="nav-link-custom active">
           <i class="bi bi-people-fill me-1"></i> Users
         </a>
-
         <a th:href="@{/admin/courses}" class="nav-link-custom">
           <i class="bi bi-play-btn-fill me-1"></i> Courses
         </a>
-
         <a th:href="@{/admin/posts}" class="nav-link-custom">
           <i class="bi bi-file-earmark-text-fill me-1"></i> Blogs
         </a>
-
         <a th:href="@{/admin/settings}" class="nav-link-custom">
           <i class="bi bi-gear-fill me-1"></i> Settings
         </a>
@@ -29,10 +25,25 @@
 
     <div class="dropdown">
       <div class="d-flex align-items-center gap-2" data-bs-toggle="dropdown" style="cursor: pointer;">
-        <span class="fw-medium text-dark">Kien Nguyen</span>
-        <div class="rounded-circle border border-dark d-flex justify-content-center align-items-center fw-bold"
+
+        <span class="fw-medium text-dark"
+              th:text="${session.loggedInUser != null ? session.loggedInUser.username : 'Guest'}">
+          Username
+        </span>
+
+        <div class="rounded-circle border border-dark d-flex justify-content-center align-items-center fw-bold overflow-hidden"
              style="width: 38px; height: 38px; background-color: #f8f9fa;">
-          AVT
+
+          <img th:if="${session.loggedInUser != null and session.loggedInUser.avatar != null}"
+               th:src="${session.loggedInUser.avatar}"
+               alt="AVT"
+               style="width: 100%; height: 100%; object-fit: cover;">
+
+          <span th:if="${session.loggedInUser == null or session.loggedInUser.avatar == null}"
+                th:text="${session.loggedInUser != null ? #strings.substring(session.loggedInUser.username, 0, 1).toUpperCase() : 'G'}">
+            A
+          </span>
+
         </div>
       </div>
 
@@ -40,7 +51,7 @@
         <li><a class="dropdown-item py-2" th:href="@{/my-courses}">My Courses</a></li>
         <li><a class="dropdown-item py-2" th:href="@{/profile}">User Profile</a></li>
         <li><hr class="dropdown-divider border-dark mx-3"></li>
-        <li><a class="dropdown-item py-2 text-danger fw-medium" th:href="@{/logout}">Log Out</a></li>
+        <li><a class="dropdown-item py-2 text-danger fw-medium" th:href="@{/auth/logout}">Log Out</a></li>
       </ul>
     </div>
   </div>
