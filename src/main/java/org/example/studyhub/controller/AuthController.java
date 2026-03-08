@@ -9,6 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
@@ -51,6 +53,10 @@ public class AuthController {
         }
 
         session.setAttribute("loggedInUser", user);
+        List<String> roleNames = user.getUserRoles().stream()
+                .map(ur -> ur.getRole().getName())
+                .toList();
+        session.setAttribute("roleNames", roleNames);
         return "redirect:/home";
     }
 

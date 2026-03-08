@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
             dto.setRoleIds(currentRoleIds);
 
             List<String> currentRoleNames = user.getUserRoles().stream()
-                    .map(ur -> ur.getRole().getValue()) // Lấy Value (Tên Role) của Setting
+                    .map(ur -> ur.getRole().getName())
                     .toList();
             dto.setRoles(currentRoleNames);
         }

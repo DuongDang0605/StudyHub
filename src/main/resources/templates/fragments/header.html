@@ -8,31 +8,52 @@
   </a>
 
   <div class="navbar-nav align-items-center ms-auto">
-    <div class="nav-item dropdown">
+
+    <div class="nav-item me-3" th:unless="${session.loggedInUser != null}">
+      <a th:href="@{/auth/login}" class="btn btn-primary fw-medium px-4 rounded-pill">
+        <i class="fa fa-sign-in-alt me-2"></i> Log In
+      </a>
+    </div>
+
+    <div class="nav-item dropdown" th:if="${session.loggedInUser != null}">
       <a href="#" class="nav-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
 
         <div class="rounded-circle d-flex justify-content-center align-items-center fw-bold overflow-hidden me-2"
              style="width: 40px; height: 40px; background-color: #191c24;">
-
-          <img th:if="${session.loggedInUser != null and session.loggedInUser.avatar != null}"
+          <img th:if="${session.loggedInUser.avatar != null}"
                th:src="${session.loggedInUser.avatar}" alt="User" style="width: 100%; height: 100%; object-fit: cover;">
-
-          <span th:if="${session.loggedInUser == null or session.loggedInUser.avatar == null}"
+          <span th:if="${session.loggedInUser.avatar == null}"
                 class="text-white"
-                th:text="${session.loggedInUser != null ? #strings.substring(session.loggedInUser.username, 0, 1).toUpperCase() : 'G'}">G</span>
+                th:text="${#strings.substring(session.loggedInUser.username, 0, 1).toUpperCase()}">G</span>
         </div>
 
-        <span class="d-none d-lg-inline-flex" th:text="${session.loggedInUser != null ? session.loggedInUser.username : 'Guest'}">
-                    John Doe
-                </span>
+        <span class="d-none d-lg-inline-flex" th:text="${session.loggedInUser.username}">
+            John Doe
+        </span>
       </a>
 
       <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-        <a th:href="@{/admin}" class="dropdown-item">Dashboard</a>
+
+        <th:block th:if="${session.roleNames != null and (#lists.contains(session.roleNames, 'Admin') or #lists.contains(session.roleNames, 'Manager'))}">
+
+          <a th:if="${currentUri != null and currentUri.startsWith('/admin')}"
+             th:href="@{/home}" class="dropdown-item text-info fw-bold">
+            <i class="fa fa-home me-2"></i> Homepage
+          </a>
+
+          <a th:unless="${currentUri != null and currentUri.startsWith('/admin')}"
+             th:href="@{/admin}" class="dropdown-item text-warning fw-bold">
+            <i class="fa fa-tachometer-alt me-2"></i> Dashboard
+          </a>
+
+          <hr class="dropdown-divider border-dark">
+        </th:block>
+
         <a th:href="@{/my-courses}" class="dropdown-item">My Courses</a>
         <a th:href="@{/profile}" class="dropdown-item">User Profile</a>
-        <a th:href="@{/auth/logout}" class="dropdown-item text-danger">Log Out</a>
+        <a th:href="@{/auth/logout}" class="dropdown-item text-danger fw-medium">Log Out</a>
       </div>
     </div>
+
   </div>
 </nav>

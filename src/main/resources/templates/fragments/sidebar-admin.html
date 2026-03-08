@@ -2,51 +2,51 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 <div th:fragment="sidebar" class="sidebar pe-4 pb-3">
+
     <nav class="navbar bg-secondary navbar-dark">
-        <a th:href="@{/admin/dashboard}" class="navbar-brand mx-4 mb-3">
-            <h3 class="text-primary"><i class="fa fa-user-edit me-2"></i>StudyHub</h3>
-        </a>
-
         <div class="d-flex align-items-center ms-4 mb-4">
-
-            <div class="position-relative" style="width: 40px; height: 40px;">
-
-                <div class="rounded-circle d-flex justify-content-center align-items-center fw-bold overflow-hidden w-100 h-100" style="background-color: #191c24;">
-                    <img th:if="${session.loggedInUser != null and session.loggedInUser.avatar != null}"
-                         th:src="${session.loggedInUser.avatar}"
-                         alt="User"
-                         style="width: 100%; height: 100%; object-fit: cover;">
-
-                    <span th:if="${session.loggedInUser == null or session.loggedInUser.avatar == null}"
-                          class="text-white"
-                          th:text="${session.loggedInUser != null ? #strings.substring(session.loggedInUser.username, 0, 1).toUpperCase() : 'G'}">
-                  G
-            </span>
-                </div>
-
-                <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1" style="z-index: 1;"></div>
-            </div>
-
             <div class="ms-3">
                 <h6 class="mb-0" th:text="${session.loggedInUser != null ? session.loggedInUser.username : 'Guest'}">
                     Guest
                 </h6>
-                <span>Admin</span>
+                <span th:text="${session.roleNames != null and !#lists.isEmpty(session.roleNames) ? #strings.listJoin(session.roleNames, ', ') : 'Guest'}">
+                    Role
+                </span>
             </div>
         </div>
 
         <div class="navbar-nav w-100">
+            <a th:href="@{/admin}" class="nav-item nav-link"
+               th:if="${#lists.contains(session.roleNames, 'Admin') or #lists.contains(session.roleNames, 'Manager')}">
+                <i class="fa fa-tachometer-alt me-2"></i>Dashboard
+            </a>
             <a href="/admin" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
 
-            <a href="#" class="nav-item nav-link"><i class="fa fa-book-open me-2"></i>Training Courses</a>
+            <a th:href="@{/course}" class="nav-item nav-link"
+               th:if="${#lists.contains(session.roleNames, 'Admin') or #lists.contains(session.roleNames, 'Manager')}">
+                <i class="fa fa-book-open me-2"></i>Training Courses
+            </a>
 
+            <a th:href="@{/enroll}" class="nav-item nav-link"
+               th:if="${#lists.contains(session.roleNames, 'Admin') or #lists.contains(session.roleNames, 'Manager')}">
+                <i class="fa fa-clipboard-list me-2"></i>Course Enrollments
+            </a>
             <a href="/admin/enrollments" class="nav-item nav-link"><i class="fa fa-clipboard-list me-2"></i>Course Enrollments</a>
 
-            <a href="/users/list" class="nav-item nav-link"><i class="fa fa-users me-2"></i>User Accounts</a>
+            <a th:href="@{/users/list}" class="nav-item nav-link"
+               th:if="${#lists.contains(session.roleNames, 'Admin')}">
+                <i class="fa fa-users me-2"></i>User Accounts
+            </a>
 
-            <a href="#" class="nav-item nav-link"><i class="fa fa-file-alt me-2"></i>Post list</a>
+            <a th:href="@{/post}" class="nav-item nav-link"
+               th:if="${#lists.contains(session.roleNames, 'Admin') or #lists.contains(session.roleNames, 'Marketing')}">
+                <i class="fa fa-file-alt me-2"></i>Post list
+            </a>
 
-            <a href="#" class="nav-item nav-link"><i class="fa fa-cog me-2"></i>System Settings</a>
+            <a th:href="@{/setting}" class="nav-item nav-link"
+               th:if="${#lists.contains(session.roleNames, 'Admin')}">
+                <i class="fa fa-cog me-2"></i>System Settings
+            </a>
         </div>
     </nav>
 </div>
