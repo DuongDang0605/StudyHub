@@ -21,7 +21,7 @@ public class Course {
     @Column(name = "course_id")
     private Long id;
 
-    @Column(name = "title", length = 255, nullable = false)
+    @Column(name = "title", length = 255, nullable = false, columnDefinition = "text")
     private String title;
 
     @Column(name = "description", columnDefinition = "TEXT")

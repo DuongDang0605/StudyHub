@@ -13,4 +13,6 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
 
     @Query("SELECT c FROM Course c LEFT JOIN FETCH c.instructor LEFT JOIN FETCH c.category ORDER BY c.createdAt DESC")
     List<Course> findTopRecentCourses(Pageable pageable);
+
+    List<Course> findAllByOrderByTitleAsc();
 }
