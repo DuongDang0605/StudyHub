@@ -20,8 +20,6 @@
                th:if="${#lists.contains(session.roleNames, 'Admin') or #lists.contains(session.roleNames, 'Manager')}">
                 <i class="fa fa-tachometer-alt me-2"></i>Dashboard
             </a>
-            <a href="/admin" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-
             <a th:href="@{/course}" class="nav-item nav-link"
                th:if="${#lists.contains(session.roleNames, 'Admin') or #lists.contains(session.roleNames, 'Manager')}">
                 <i class="fa fa-book-open me-2"></i>Training Courses
