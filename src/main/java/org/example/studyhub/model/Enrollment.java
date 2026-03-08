@@ -30,12 +30,11 @@ public class Enrollment {
     private User user;
 
     // Actual learner info (can be different from the logged-in user)
-    @Column(name = "full_name", length = 100, nullable = false)
+    @Column(name = "full_name", columnDefinition = "TEXT")
     private String fullName;
 
-    @Column(name = "email", length = 100, nullable = false)
+    @Column(name = "email", columnDefinition = "TEXT")
     private String email;
-
     @Column(name = "mobile", length = 20)
     private String mobile;
 
