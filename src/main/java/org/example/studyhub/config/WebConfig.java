@@ -16,14 +16,21 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns(
-                        "/users/**"
+//                        "/users/**",
 //                        "/admin/**",
 //                        "/courses/**",
-//                        "/posts/**",
+//                       "/posts/**",
 //                        "/profile",
-//                        "/my-courses"
+//                        "/my-courses",
+//                        "/chapter",
+//                        "/comment",
+//                        "/enroll",
+//                        "/lesson",
+//                        "/post",
+//                        "/setting"
                 )
                 .excludePathPatterns(
+                        "/home",
                         "/auth/**",
                         "/css/**",
                         "/js/**",
