@@ -18,7 +18,19 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
             "AND (:keyword IS NULL OR " +
             "   e.full_name ILIKE %:keyword% OR " +
             "   e.email ILIKE %:keyword% OR " +
-            "   c.title ILIKE %:keyword%)",
+            "   c.title ILIKE %:keyword%) " +
+            "AND (:managerId IS NULL OR c.instructor_id = :managerId)", // Lọc theo Manager nếu có
+            countQuery = "SELECT count(*) FROM enrollment e " +
+                    "JOIN course c ON e.course_id = c.course_id " +
+                    "WHERE (:courseId IS NULL OR e.course_id = :courseId) " +
+                    "AND (:status IS NULL OR e.status = :status) " +
+                    "AND (:keyword IS NULL OR e.full_name ILIKE %:keyword%) " +
+                    "AND (:managerId IS NULL OR c.instructor_id = :managerId)",
             nativeQuery = true)
-    Page<Enrollment> searchEnrollments(Long courseId, String status, String keyword, Pageable pageable);
+    Page<Enrollment> searchEnrollments(
+            @Param("courseId") Long courseId,
+            @Param("status") String status,
+            @Param("keyword") String keyword,
+            @Param("managerId") Long managerId,
+            Pageable pageable);
 }

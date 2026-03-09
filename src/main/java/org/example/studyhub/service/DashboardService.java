@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface DashboardService {
-    Map<String, Object> getDashboardData();
+    Map<String, Object> getDashboardData(String username, boolean isAdmin);
 
 
     CourseDTO getCourseDtoById(Long id);
@@ -21,4 +21,6 @@ public interface DashboardService {
 
     List<SettingDTO> getAllCategories();
     List<UserDTO> getAllInstructors();
+
+
 }

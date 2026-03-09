@@ -1,9 +1,12 @@
 package org.example.studyhub.controller;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.example.studyhub.dto.ChapterDTO;
 import org.example.studyhub.dto.CourseDTO;
 import org.example.studyhub.model.Course;
+import org.example.studyhub.model.User;
 import org.example.studyhub.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -21,11 +25,20 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping
-    public String showDashboard(Model model) {
-        model.addAllAttributes(dashboardService.getDashboardData());
+    public String showDashboard(Model model, HttpSession session) {
+        User currentUser = (User) session.getAttribute("loggedInUser");
+
+        if (currentUser == null) {
+            return "redirect:/auth/login";
+        }
+
+        String username = currentUser.getUsername();
+        boolean isAdmin = currentUser.getUserRoles().stream()
+                .anyMatch(ur -> ur.getRole().getName().equalsIgnoreCase("ADMIN"));
+
+        model.addAllAttributes(dashboardService.getDashboardData(username, isAdmin));
         return "admin/dashboard/dashboard";
     }
-
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         model.addAttribute("course", dashboardService.getCourseDtoById(id));

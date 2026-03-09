@@ -19,12 +19,15 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private EnrollmentRepository enrollmentRepository;
 
     @Override
-    public Page<Enrollment> getListEnrollmentPage(Long courseId, String status, String keyword, int page, int size) {
+    public Page<Enrollment> getListEnrollmentPage(Long courseId, String status, String keyword, int page, int size, Long currentUserId, boolean isAdmin) {
 
         String statusParam = (status != null && !status.isEmpty() && !status.equals("All")) ? status : null;
         String keywordParam = (keyword != null && !keyword.isEmpty()) ? keyword : null;
-        Pageable pageable = PageRequest.of(page, size);
 
-        return enrollmentRepository.searchEnrollments(courseId, statusParam, keywordParam, pageable);
+        Long managerId = isAdmin ? null : currentUserId;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("enrolledAt").descending());
+
+        return enrollmentRepository.searchEnrollments(courseId, statusParam, keywordParam, managerId, pageable);
     }
 }
