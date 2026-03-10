@@ -11,14 +11,18 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
-    @Query(value = "SELECT e.* FROM enrollment e " +
-            "JOIN course c ON e.course_id = c.course_id " +
-            "WHERE (:courseId IS NULL OR e.course_id = :courseId) " +
+    @Query("SELECT e FROM Enrollment e " +
+            "WHERE (:courseId IS NULL OR e.course.id = :courseId) " +
             "AND (:status IS NULL OR e.status = :status) " +
             "AND (:keyword IS NULL OR " +
-            "   e.full_name ILIKE %:keyword% OR " +
-            "   e.email ILIKE %:keyword% OR " +
-            "   c.title ILIKE %:keyword%)",
-            nativeQuery = true)
-    Page<Enrollment> searchEnrollments(Long courseId, String status, String keyword, Pageable pageable);
+            "   e.fullName LIKE %:keyword% OR " +
+            "   e.email LIKE %:keyword% OR " +
+            "   e.course.title LIKE %:keyword%) " +
+            "AND (:managerId IS NULL OR e.course.instructor.id = :managerId)")
+    Page<Enrollment> searchEnrollments(
+            @Param("courseId") Long courseId,
+            @Param("status") String status,
+            @Param("keyword") String keyword,
+            @Param("managerId") Long managerId,
+            Pageable pageable);
 }

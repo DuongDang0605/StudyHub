@@ -1,6 +1,8 @@
 package org.example.studyhub.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.example.studyhub.model.Enrollment;
+import org.example.studyhub.model.User;
 import org.example.studyhub.service.CourseService;
 import org.example.studyhub.service.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,21 +29,29 @@ public class EnrollmentAdminController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
+            HttpSession session,
             Model model) {
 
-        Page<Enrollment> enrollmentPage = enrollmentService.getListEnrollmentPage(courseId, status, keyword, page, 10);
+        User currentUser = (User) session.getAttribute("loggedInUser");
+        if (currentUser == null) return "redirect:/auth/login";
+
+        boolean isAdmin = currentUser.getUserRoles().stream()
+                .anyMatch(ur -> ur.getRole().getName().equalsIgnoreCase("ADMIN"));
+
+
+        Page<Enrollment> enrollmentPage = enrollmentService.getListEnrollmentPage(
+                courseId, status, keyword, page, 10, currentUser.getId(), isAdmin);
 
         model.addAttribute("enrollments", enrollmentPage.getContent());
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("currentUserId", currentUser.getId());
+
+
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", enrollmentPage.getTotalPages());
-        model.addAttribute("totalItems", enrollmentPage.getTotalElements());
-
         model.addAttribute("selectedCourseId", courseId);
         model.addAttribute("selectedStatus", status);
         model.addAttribute("keyword", keyword);
-
-
-        model.addAttribute("courses", courseService.getAllCourses());
 
         return "admin/enrollment/enrollment-list";
     }

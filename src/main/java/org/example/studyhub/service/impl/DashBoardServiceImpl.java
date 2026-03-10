@@ -38,17 +38,26 @@ public class DashBoardServiceImpl implements DashboardService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getDashboardData() {
+    public Map<String, Object> getDashboardData(String username, boolean isAdmin) {
         Map<String, Object> stats = new HashMap<>();
+
         stats.put("totalUsers", userRepository.count());
         stats.put("totalCourses", courseRepository.count());
         stats.put("publishedPostsCount", postRepository.countByStatus("PUBLISHED"));
         stats.put("publishedCoursesCount", courseRepository.countByStatus("PUBLISHED"));
 
         stats.put("recentCourses", courseRepository.findTopRecentCourses(PageRequest.of(0, 7)));
+
+        stats.put("isAdmin", isAdmin);
+
+        if (!isAdmin) {
+            userRepository.findByUsername(username).ifPresent(user -> {
+                stats.put("currentUserId", user.getId());
+            });
+        }
+
         return stats;
     }
-
     @Override
     @Transactional(readOnly = true)
     public CourseDTO getCourseDtoById(Long id) {
