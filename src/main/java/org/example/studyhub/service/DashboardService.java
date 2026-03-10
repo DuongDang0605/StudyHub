@@ -4,14 +4,13 @@ import org.example.studyhub.dto.ChapterDTO;
 import org.example.studyhub.dto.CourseDTO;
 import org.example.studyhub.dto.SettingDTO;
 import org.example.studyhub.dto.UserDTO;
-import org.example.studyhub.model.Setting;
-import org.example.studyhub.model.User;
+
 
 import java.util.List;
 import java.util.Map;
 
 public interface DashboardService {
-    Map<String, Object> getDashboardData(String username, boolean isAdmin);
+    Map<String, Object> getDashboardData(String username, boolean isAdmin, int page);
 
 
     CourseDTO getCourseDtoById(Long id);

@@ -2,30 +2,28 @@ package org.example.studyhub.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.example.studyhub.dto.ChapterDTO;
 import org.example.studyhub.dto.CourseDTO;
-import org.example.studyhub.model.Course;
 import org.example.studyhub.model.User;
 import org.example.studyhub.service.DashboardService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.security.Principal;
+
 import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/admin") // Gốc là /admin
+@RequestMapping("/admin")
 public class DashboardController {
 
     private final DashboardService dashboardService;
 
     @GetMapping
-    public String showDashboard(Model model, HttpSession session) {
+    public String showDashboard(Model model, HttpSession session,
+                                @RequestParam(defaultValue = "0") int page) {
         User currentUser = (User) session.getAttribute("loggedInUser");
 
         if (currentUser == null) {
@@ -36,7 +34,7 @@ public class DashboardController {
         boolean isAdmin = currentUser.getUserRoles().stream()
                 .anyMatch(ur -> ur.getRole().getName().equalsIgnoreCase("ADMIN"));
 
-        model.addAllAttributes(dashboardService.getDashboardData(username, isAdmin));
+        model.addAllAttributes(dashboardService.getDashboardData(username, isAdmin, page));
         return "admin/dashboard/dashboard";
     }
     @GetMapping("/edit/{id}")
