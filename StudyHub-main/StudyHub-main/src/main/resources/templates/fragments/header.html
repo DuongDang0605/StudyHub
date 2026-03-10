@@ -1,0 +1,38 @@
+<nav th:fragment="header" class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
+  <a th:href="@{/admin/dashboard}" class="navbar-brand d-flex d-lg-none me-4">
+    <h2 class="text-primary mb-0"><i class="fa fa-user-edit"></i></h2>
+  </a>
+
+  <a href="#" class="sidebar-toggler flex-shrink-0">
+    <i class="fa fa-bars"></i>
+  </a>
+
+  <div class="navbar-nav align-items-center ms-auto">
+    <div class="nav-item dropdown">
+      <a href="#" class="nav-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
+
+        <div class="rounded-circle d-flex justify-content-center align-items-center fw-bold overflow-hidden me-2"
+             style="width: 40px; height: 40px; background-color: #191c24;">
+
+          <img th:if="${session.loggedInUser != null and session.loggedInUser.avatar != null}"
+               th:src="${session.loggedInUser.avatar}" alt="User" style="width: 100%; height: 100%; object-fit: cover;">
+
+          <span th:if="${session.loggedInUser == null or session.loggedInUser.avatar == null}"
+                class="text-white"
+                th:text="${session.loggedInUser != null ? #strings.substring(session.loggedInUser.username, 0, 1).toUpperCase() : 'G'}">G</span>
+        </div>
+
+        <span class="d-none d-lg-inline-flex" th:text="${session.loggedInUser != null ? session.loggedInUser.username : 'Guest'}">
+                    John Doe
+                </span>
+      </a>
+
+      <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
+        <a th:href="@{/admin}" class="dropdown-item">Dashboard</a>
+        <a th:href="@{/my-courses}" class="dropdown-item">My Courses</a>
+        <a th:href="@{/profile}" class="dropdown-item">User Profile</a>
+        <a th:href="@{/auth/logout}" class="dropdown-item text-danger">Log Out</a>
+      </div>
+    </div>
+  </div>
+</nav>
