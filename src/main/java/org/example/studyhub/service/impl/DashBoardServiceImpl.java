@@ -7,14 +7,13 @@ import org.example.studyhub.dto.CourseDTO;
 import org.example.studyhub.dto.SettingDTO;
 import org.example.studyhub.dto.UserDTO;
 import org.example.studyhub.model.Course;
-import org.example.studyhub.model.Setting;
-import org.example.studyhub.model.User;
 import org.example.studyhub.repository.CourseRepository;
 import org.example.studyhub.repository.PostRepository;
 import org.example.studyhub.repository.SettingRepository;
 import org.example.studyhub.repository.UserRepository;
 
 import org.example.studyhub.service.DashboardService;
+import org.springframework.data.domain.Page;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,7 @@ public class DashBoardServiceImpl implements DashboardService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getDashboardData(String username, boolean isAdmin) {
+    public Map<String, Object> getDashboardData(String username, boolean isAdmin, int page) {
         Map<String, Object> stats = new HashMap<>();
 
         stats.put("totalUsers", userRepository.count());
@@ -46,8 +45,13 @@ public class DashBoardServiceImpl implements DashboardService {
         stats.put("publishedPostsCount", postRepository.countByStatus("PUBLISHED"));
         stats.put("publishedCoursesCount", courseRepository.countByStatus("PUBLISHED"));
 
-        stats.put("recentCourses", courseRepository.findTopRecentCourses(PageRequest.of(0, 7)));
+        int pageSize = 5;
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        Page<Course> coursePage = courseRepository.findTopRecentCourses(pageRequest);
 
+        stats.put("recentCourses", coursePage.getContent());
+        stats.put("totalPages", coursePage.getTotalPages());
+        stats.put("currentPage", page);
         stats.put("isAdmin", isAdmin);
 
         if (!isAdmin) {
