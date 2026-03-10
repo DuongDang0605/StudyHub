@@ -25,12 +25,10 @@
                 <i class="fa fa-book-open me-2"></i>Training Courses
             </a>
 
-            <a th:href="@{/enroll}" class="nav-item nav-link"
+            <a th:href="@{/admin/enrollments}" class="nav-item nav-link"
                th:if="${#lists.contains(session.roleNames, 'Admin') or #lists.contains(session.roleNames, 'Manager')}">
                 <i class="fa fa-clipboard-list me-2"></i>Course Enrollments
             </a>
-            <a href="/admin/enrollments" class="nav-item nav-link"><i class="fa fa-clipboard-list me-2"></i>Course Enrollments</a>
-
             <a th:href="@{/users/list}" class="nav-item nav-link"
                th:if="${#lists.contains(session.roleNames, 'Admin')}">
                 <i class="fa fa-users me-2"></i>User Accounts
