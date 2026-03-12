@@ -1,5 +1,6 @@
 package org.example.studyhub.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -16,7 +17,8 @@ public class EnrollmentDTO {
     private Long courseId;
     private String courseTitle;
     private Long userId;
-    private String fullName;
+    @NotBlank(message = "Họ và tên không được để trống")
+    private String  fullName;
     private String email;
     private String mobile;
     private BigDecimal fee;
