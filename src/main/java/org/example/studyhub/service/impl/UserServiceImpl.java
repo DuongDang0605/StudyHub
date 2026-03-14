@@ -17,6 +17,8 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.example.studyhub.model.Setting;
+import java.util.HashSet;
 
 @Service
 @Transactional
@@ -235,5 +237,89 @@ public class UserServiceImpl implements UserService {
         user.setEmailVerifyExpiredAt(null);
 
         userRepository.save(user);
+    }
+    @Override
+    public void registerByEmail(String fullName, String email, String rawPassword) {
+        String normalizedFullName = fullName == null ? "" : fullName.trim();
+        String normalizedEmail = email == null ? "" : email.trim().toLowerCase();
+
+        if (normalizedFullName.length() < 2) {
+            throw new IllegalArgumentException("Họ tên phải có ít nhất 2 ký tự.");
+        }
+        if (!normalizedEmail.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            throw new IllegalArgumentException("Email không hợp lệ.");
+        }
+        if (rawPassword == null || rawPassword.length() < 6) {
+            throw new IllegalArgumentException("Mật khẩu phải có ít nhất 6 ký tự.");
+        }
+        if (userRepository.existsByEmail(normalizedEmail)) {
+            throw new IllegalArgumentException("Email đã được sử dụng.");
+        }
+
+        String username = buildUniqueUsernameFromEmail(normalizedEmail);
+
+        User user = new User();
+        user.setFullName(normalizedFullName);
+        user.setEmail(normalizedEmail);
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(rawPassword));
+        user.setStatus("UNVERIFIED");
+        user.setEmailVerifyToken(UUID.randomUUID().toString());
+        user.setEmailVerifyExpiredAt(LocalDateTime.now().plusHours(24));
+        user.setUserRoles(new HashSet<>());
+
+        user = userRepository.save(user);
+
+        Setting memberRole = settingRepository.findByTypeIdAndStatus(1L, "ACTIVE").stream()
+                .filter(s -> "MEMBER".equalsIgnoreCase(s.getName()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Chưa có role MEMBER trong bảng setting."));
+
+        UserRole userRole = new UserRole();
+        userRole.setId(new UserRole.UserRoleId(user.getId(), memberRole.getId()));
+        userRole.setUser(user);
+        userRole.setRole(memberRole);
+
+        user.getUserRoles().add(userRole);
+        userRepository.save(user);
+
+        emailService.sendVerificationEmail(user.getEmail(), user.getEmailVerifyToken());
+    }
+
+    private String buildUniqueUsernameFromEmail(String email) {
+        String localPart = email.substring(0, email.indexOf('@'));
+        String base = localPart.replaceAll("[^a-zA-Z0-9_]", "_");
+        if (base.isBlank()) {
+            base = "user";
+        }
+        if (base.length() > 20) {
+            base = base.substring(0, 20);
+        }
+
+        String candidate = base;
+        int suffix = 1;
+        while (userRepository.existsByUsername(candidate)) {
+            String s = "_" + suffix++;
+            int maxBaseLen = Math.max(1, 20 - s.length());
+            String cut = base.length() > maxBaseLen ? base.substring(0, maxBaseLen) : base;
+            candidate = cut + s;
+        }
+        return candidate;
+    }
+    @Override
+    public boolean verifyEmailToken(String token) {
+        User user = userRepository.findByEmailVerifyToken(token).orElse(null);
+        if (user == null) return false;
+
+        if (user.getEmailVerifyExpiredAt() == null
+                || user.getEmailVerifyExpiredAt().isBefore(LocalDateTime.now())) {
+            return false;
+        }
+
+        user.setStatus("ACTIVE");
+        user.setEmailVerifyToken(null);
+        user.setEmailVerifyExpiredAt(null);
+        userRepository.save(user);
+        return true;
     }
 }
