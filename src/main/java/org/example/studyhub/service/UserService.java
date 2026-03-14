@@ -20,5 +20,7 @@ public interface UserService {
     User authenticate(String email, String password);
     void resendVerificationEmail(String email);
     boolean validateVerificationToken(String token);
+    void registerByEmail(String fullName, String email, String rawPassword);
+    boolean verifyEmailToken(String token);
     void verifyAndSetupPassword(String token, String newPassword);
 }
