@@ -22,10 +22,11 @@
       <div class="bg-secondary rounded p-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
           <h3 class="mb-0 text-white">Course Enrollments</h3>
-          <div class="btn-group shadow-sm">
-            <button class="btn btn-outline-light btn-sm"><i class="fa fa-upload me-2"></i>Import</button>
-            <button class="btn btn-outline-light btn-sm"><i class="fa fa-download me-2"></i>Export</button>
-            <a th:href="@{/admin/enrollments/new}" class="btn btn-primary btn-sm"><i class="fa fa-plus me-2"></i>Add New</a>
+          <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Enrollment Management</h6>
+            <a th:href="@{/admin/enrollments/add}" class="btn btn-primary btn-sm">
+              <i class="fa fa-plus me-2"></i>Add New Enrollment
+            </a>
           </div>
         </div>
 
@@ -95,8 +96,14 @@
               </td>
               <td class="text-center">
                 <div class="d-flex justify-content-center gap-1">
-                  <a th:href="@{/admin/enrollments/edit/{id}(id=${e.id})}" class="btn btn-sm btn-outline-info"><i class="fa fa-edit"></i></a>
-                  <button class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></button>
+                  <a th:href="@{/admin/enrollments/edit/{id}(id=${e.id})}" class="btn btn-sm btn-outline-info">
+                    <i class="fa fa-edit"></i>
+                  </a>
+                  <a th:href="@{/admin/enrollments/delete/{id}(id=${e.id})}"
+                     class="btn btn-sm btn-outline-danger"
+                     onclick="return confirm('Bạn có chắc chắn muốn hủy (xóa mềm) đơn đăng ký này không?')">
+                    <i class="fa fa-trash"></i>
+                  </a>
                 </div>
               </td>
             </tr>
