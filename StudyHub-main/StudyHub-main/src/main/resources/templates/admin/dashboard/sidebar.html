@@ -1,0 +1,49 @@
+<aside id="sidebar" th:fragment="sidebar"
+       class="w-64 bg-[#2c3e50] text-gray-300 flex-shrink-0 transition-all duration-300 ease-in-out overflow-y-auto h-screen sticky top-0">
+    <div class="p-4 flex items-center space-x-2 text-white border-b border-gray-700">
+        <i class="fas fa-graduation-cap"></i>
+        <span class="sidebar-text font-bold text-lg">Learning Admin</span>
+    </div>
+    <nav class="mt-4">
+        <a th:href="@{/admin}" class="flex items-center px-4 py-3 hover:bg-gray-700 transition">
+            <i class="fas fa-tachometer-alt w-6"></i>
+            <span class="sidebar-text ml-2">Dashboard</span>
+        </a>
+        <a th:href="@{/admin/courses}" class="flex items-center px-4 py-3 hover:bg-gray-700 transition">
+            <i class="fas fa-book w-6"></i>
+            <span class="sidebar-text ml-2">Courses</span>
+        </a>
+    </nav>
+</aside>
+
+<script th:fragment="sidebar-script">
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const texts = document.querySelectorAll('.sidebar-text');
+
+        // Kiểm tra trạng thái hiện tại dựa trên chiều rộng w-64
+        if (sidebar.classList.contains('w-64')) {
+            // THU NHỎ
+            sidebar.classList.replace('w-64', 'w-20');
+            texts.forEach(el => el.classList.add('hidden'));
+            localStorage.setItem('sidebarStatus', 'collapsed');
+        } else {
+            // MỞ RỘNG
+            sidebar.classList.replace('w-20', 'w-64');
+            texts.forEach(el => el.classList.remove('hidden'));
+            localStorage.setItem('sidebarStatus', 'expanded');
+        }
+    }
+
+    // Tự động khôi phục trạng thái khi load trang
+    document.addEventListener("DOMContentLoaded", function() {
+        const status = localStorage.getItem('sidebarStatus');
+        const sidebar = document.getElementById('sidebar');
+        const texts = document.querySelectorAll('.sidebar-text');
+
+        if (status === 'collapsed' && sidebar) {
+            sidebar.classList.replace('w-64', 'w-20');
+            texts.forEach(el => el.classList.add('hidden'));
+        }
+    });
+</script>
