@@ -126,7 +126,6 @@ public class CourseController {
         return "redirect:/admin/courses";
     }
 
-    // REST API endpoints for Swagger
     @GetMapping("/api/all")
     @ResponseBody
     public ResponseEntity<List<CourseDTO>> getAllCoursesAPI() {

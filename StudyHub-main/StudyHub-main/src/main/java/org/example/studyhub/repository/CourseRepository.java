@@ -10,8 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
     // Basic operations
-    List<Course> findAll();
-    
+
     // Count by status (for statistics if needed)
     long countByStatus(String status);
 }
