@@ -23,4 +23,6 @@ public interface UserService {
     void registerByEmail(String fullName, String email, String rawPassword);
     boolean verifyEmailToken(String token);
     void verifyAndSetupPassword(String token, String newPassword);
+
+    List<User> getUsersByRole(String roleName);
 }

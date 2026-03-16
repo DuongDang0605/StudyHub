@@ -8,4 +8,5 @@ import java.util.List;
 public interface CourseService {
     List<Course> getAllCourses();
     List<Course> getActiveCoursesByStatus();
+    List<Course> getCoursesByInstructor(Long instructorId);
 }

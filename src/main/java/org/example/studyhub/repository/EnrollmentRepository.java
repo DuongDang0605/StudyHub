@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -35,4 +36,14 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
                                   Pageable pageable);
 
     Optional<Enrollment> findByOrderCode(Long orderCode);
+
+    @Query("SELECT e FROM Enrollment e WHERE " +
+            "(:courseId IS NULL OR e.course.id = :courseId) AND " +
+            "(:status IS NULL OR :status = '' OR :status = 'All' OR e.status = :status) AND " +
+            "(:keyword IS NULL OR :keyword = '' OR " +
+            " LOWER(e.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            " LOWER(e.email) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    List<Enrollment> findAllWithFilter(@Param("courseId") Long courseId,
+                                       @Param("status") String status,
+                                       @Param("keyword") String keyword);
 }

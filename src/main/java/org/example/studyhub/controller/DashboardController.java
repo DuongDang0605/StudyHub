@@ -32,7 +32,7 @@ public class DashboardController {
 
         String username = currentUser.getUsername();
         boolean isAdmin = currentUser.getUserRoles().stream()
-                .anyMatch(ur -> ur.getRole().getName().equalsIgnoreCase("ADMIN"));
+                .anyMatch(ur -> ur.getRole().getName().equalsIgnoreCase("Admin"));
 
         model.addAllAttributes(dashboardService.getDashboardData(username, isAdmin, page));
         return "admin/dashboard/dashboard";

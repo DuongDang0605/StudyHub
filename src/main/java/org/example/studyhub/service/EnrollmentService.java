@@ -3,6 +3,9 @@ package org.example.studyhub.service;
 import org.example.studyhub.dto.EnrollmentDTO;
 import org.example.studyhub.model.Enrollment;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayInputStream;
 
 import java.util.Map;
 
@@ -16,4 +19,7 @@ public interface EnrollmentService {
 
 
     Map<String, Object> prepareCheckoutData(Long courseId, Long enrollmentId, Long userId);
+
+    ByteArrayInputStream exportEnrollmentsToExcel(Long courseId, String status, String keyword);
+    void importEnrollments(MultipartFile file, Long courseId, Long adminId);
 }
