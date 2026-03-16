@@ -28,6 +28,12 @@
                     <a th:href="@{/admin/enrollments}" class="btn btn-sm btn-outline-primary">Back to List</a>
                 </div>
 
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fa fa-exclamation-circle me-2"></i>
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
                 <form th:action="@{${enrollmentDTO.id == null ? '/admin/enrollments/add' : '/admin/enrollments/edit/' + enrollmentDTO.id}}"
                       th:method="post" th:object="${enrollmentDTO}">
 
@@ -39,8 +45,12 @@
                             <label class="form-label">Course Name *</label>
                             <select class="form-select bg-dark border-0 text-white" th:field="*{courseId}">
                                 <option value="" th:if="${enrollmentDTO.id == null}">-- Select Course --</option>
-                                <option th:each="c : ${activeCourses}" th:value="${c.id}"
-                                        th:text="${c.title}" th:selected="${c.id == enrollmentDTO.courseId}"></option>
+
+                                <option th:each="c : ${activeCourses}"
+                                        th:value="${c.id}"
+                                        th:text="${c.title}"
+                                        th:selected="${enrollmentDTO.courseId != null and c.id == enrollmentDTO.courseId}">
+                                </option>
                             </select>
                             <div class="text-danger small" th:if="${#fields.hasErrors('courseId')}" th:errors="*{courseId}"></div>
                         </div>
@@ -53,13 +63,15 @@
                         <div class="col-md-6">
                             <label class="form-label">Full Name *</label>
                             <input type="text" class="form-control bg-dark border-0 text-white"
-                                   th:field="*{fullName}" th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid'">
+                                   th:field="*{fullName}" placeholder="Nhập tên chính xác của học viên">
                             <div class="text-danger small" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Email *</label>
-                            <input type="email" class="form-control bg-dark border-0 text-white" th:field="*{email}">
+                            <input type="email" class="form-control bg-dark border-0 text-white"
+                                   th:field="*{email}" placeholder="Email phải tồn tại trên hệ thống">
+                            <div class="text-danger small" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                         </div>
 
                         <div class="col-12">
