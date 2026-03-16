@@ -21,7 +21,7 @@
     <div class="container-fluid pt-4 px-4">
       <div class="bg-secondary rounded p-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
-          <h3 class="mb-0 text-white">Course Enrollments</h3>
+          <h3 class="mb-0 text-white">Quản lý đăng ký khóa học</h3>
           <div class="d-flex gap-2">
             <a th:href="@{/admin/enrollments/import-page}" class="btn btn-outline-success btn-sm">
               <i class="fa fa-file-import me-2"></i>Import Excel
@@ -33,15 +33,16 @@
             </a>
 
             <a th:href="@{/admin/enrollments/add}" class="btn btn-primary btn-sm">
-              <i class="fa fa-plus me-2"></i>Add New
+              <i class="fa fa-plus me-2"></i>Thêm mới
             </a>
           </div>
         </div>
 
         <form th:action="@{/admin/enrollments}" method="get" class="row g-2 mb-4 align-items-end">
           <div class="col-md-3">
+            <label class="text-white small mb-1">Khóa học</label>
             <select name="courseId" class="form-select bg-dark text-white border-0">
-              <option value="">All Courses</option>
+              <option value="">-- Tất cả khóa học --</option>
               <option th:each="c : ${courses}"
                       th:value="${c.id}"
                       th:text="${c.title}"
@@ -49,18 +50,22 @@
             </select>
           </div>
           <div class="col-md-2">
+            <label class="text-white small mb-1">Trạng thái</label>
             <select name="status" class="form-select bg-dark text-white border-0">
-              <option value="All">All Status</option>
+              <option value="">Tất cả</option>
               <option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">Pending</option>
               <option value="APPROVED" th:selected="${selectedStatus == 'APPROVED'}">Approved</option>
               <option value="REJECTED" th:selected="${selectedStatus == 'REJECTED'}">Rejected</option>
             </select>
           </div>
           <div class="col-md-4">
-            <input type="text" name="keyword" th:value="${keyword}" class="form-control bg-dark text-white border-0" placeholder="Full Name, Email, Course">
+            <label class="text-white small mb-1">Tìm kiếm</label>
+            <input type="text" name="keyword" th:value="${keyword}" class="form-control bg-dark text-white border-0" placeholder="Tên học viên, Email...">
           </div>
-          <div class="col-md-2">
-            <button type="submit" class="btn btn-primary w-100">Filter</button>
+          <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="fa fa-filter me-2"></i>Lọc dữ liệu
+            </button>
           </div>
         </form>
 
@@ -69,12 +74,12 @@
             <thead>
             <tr class="text-white">
               <th scope="col">ID</th>
-              <th scope="col">Course</th>
-              <th scope="col">User Info</th>
-              <th scope="col">Enrolled At</th>
-              <th scope="col">Status</th>
-              <th scope="col">Progress</th>
-              <th scope="col" class="text-center">Actions</th>
+              <th scope="col">Khóa học</th>
+              <th scope="col">Thông tin học viên</th>
+              <th scope="col">Ngày đăng ký</th>
+              <th scope="col">Trạng thái</th>
+              <th scope="col">Tiến độ</th>
+              <th scope="col" class="text-center">Thao tác</th>
             </tr>
             </thead>
             <tbody>
@@ -82,13 +87,13 @@
               <td th:text="${e.id}"></td>
               <td>
                 <div class="text-white fw-bold" th:text="${e.course.title}"></div>
-                <small class="text-muted">Fee: <span th:text="${e.fee}"></span></small>
+                <small class="text-muted">Giá: <span th:text="${#numbers.formatDecimal(e.fee, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span></small>
               </td>
               <td>
                 <div class="text-white" th:text="${e.fullName}"></div>
                 <small class="text-muted" th:text="${e.email}"></small>
               </td>
-              <td th:text="${#temporals.format(e.enrolledAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+              <td th:text="${#temporals.format(e.enrolledAt, 'dd-MM-yyyy HH:mm')}"></td>
               <td>
                                 <span class="badge"
                                       th:classappend="${e.status == 'APPROVED' ? 'bg-success' : (e.status == 'PENDING' ? 'bg-warning text-dark' : 'bg-danger')}"
@@ -104,60 +109,46 @@
               </td>
               <td class="text-center">
                 <div class="d-flex justify-content-center gap-1">
-                  <a th:href="@{/admin/enrollments/edit/{id}(id=${e.id})}" class="btn btn-sm btn-outline-info">
+                  <a th:href="@{/admin/enrollments/edit/{id}(id=${e.id})}" class="btn btn-sm btn-outline-info" title="Sửa">
                     <i class="fa fa-edit"></i>
                   </a>
                   <a th:href="@{/admin/enrollments/delete/{id}(id=${e.id})}"
-                     class="btn btn-sm btn-outline-danger"
+                     class="btn btn-sm btn-outline-danger" title="Xóa"
                      onclick="return confirm('Bạn có chắc chắn muốn hủy đơn này?')">
                     <i class="fa fa-trash"></i>
                   </a>
                 </div>
               </td>
             </tr>
+            <tr th:if="${#lists.isEmpty(enrollments)}">
+              <td colspan="7" class="text-center py-4">Không tìm thấy dữ liệu đăng ký nào.</td>
+            </tr>
             </tbody>
           </table>
         </div>
 
         <div class="d-flex justify-content-between align-items-center mt-4">
-          <small class="text-muted">Showing page [[${currentPage + 1}]] of [[${totalPages}]]</small>
+          <small class="text-muted">Trang [[${currentPage + 1}]] / [[${totalPages}]]</small>
           <nav th:if="${totalPages > 0}">
             <ul class="pagination pagination-sm mb-0">
               <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                <a class="page-link bg-dark border-0" th:href="@{/admin/enrollments(page=${currentPage - 1}, courseId=${selectedCourseId}, status=${selectedStatus}, keyword=${keyword})}">Previous</a>
+                <a class="page-link bg-dark border-0 text-white"
+                   th:href="@{/admin/enrollments(page=${currentPage - 1}, courseId=${selectedCourseId}, status=${selectedStatus}, keyword=${keyword})}">Trước</a>
               </li>
-              <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${i == currentPage} ? 'active'">
-                <a class="page-link border-0" th:href="@{/admin/enrollments(page=${i}, courseId=${selectedCourseId}, status=${selectedStatus}, keyword=${keyword})}" th:text="${i + 1}"></a>
+
+              <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                  th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link border-0"
+                   th:href="@{/admin/enrollments(page=${i}, courseId=${selectedCourseId}, status=${selectedStatus}, keyword=${keyword})}"
+                   th:text="${i + 1}"></a>
               </li>
+
               <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                <a class="page-link bg-dark border-0" th:href="@{/admin/enrollments(page=${currentPage + 1}, courseId=${selectedCourseId}, status=${selectedStatus}, keyword=${keyword})}">Next</a>
+                <a class="page-link bg-dark border-0 text-white"
+                   th:href="@{/admin/enrollments(page=${currentPage + 1}, courseId=${selectedCourseId}, status=${selectedStatus}, keyword=${keyword})}">Sau</a>
               </li>
             </ul>
           </nav>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content bg-secondary text-white">
-          <form th:action="@{/admin/enrollments/import}" method="post" enctype="multipart/form-data">
-            <div class="modal-header border-0">
-              <h5 class="modal-title" id="importModalLabel">Import Enrollments from Excel</h5>
-              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <div class="mb-3">
-                <label for="file" class="form-label">Choose Excel File (.xlsx)</label>
-                <input class="form-control bg-dark text-white border-0" type="file" name="file" id="file" accept=".xlsx" required>
-              </div>
-              <small class="text-muted">Lưu ý: File Excel phải tuân thủ đúng định dạng các cột theo mẫu.</small>
-            </div>
-            <div class="modal-footer border-0">
-              <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary">Start Import</button>
-            </div>
-          </form>
         </div>
       </div>
     </div>

@@ -54,13 +54,21 @@ public class EnrollmentAdminController {
                 .anyMatch(ur -> ur.getRole().getName().equalsIgnoreCase("Admin"));
 
 
+        List<Course> coursesList;
+        if (isAdmin) {
+            coursesList = courseService.getAllCourses();
+        } else {
+            coursesList = courseService.getCoursesByInstructor(currentUser.getId());
+        }
+        model.addAttribute("courses", coursesList);
+
+
         Page<Enrollment> enrollmentPage = enrollmentService.getListEnrollmentPage(
                 courseId, status, keyword, page, 10, currentUser.getId(), isAdmin);
 
+        model.addAttribute("enrollmentPage", enrollmentPage); 
         model.addAttribute("enrollments", enrollmentPage.getContent());
         model.addAttribute("isAdmin", isAdmin);
-        model.addAttribute("currentUserId", currentUser.getId());
-
 
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", enrollmentPage.getTotalPages());
