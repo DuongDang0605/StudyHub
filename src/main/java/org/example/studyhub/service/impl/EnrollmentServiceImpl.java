@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -49,7 +51,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     public void updateEnrollment(Long id, EnrollmentDTO dto) {
         Enrollment enrollment = enrollmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy dữ liệu đăng ký"));
-
+        if(dto.getEmail() != null) {
+            userRepository.findByEmail(dto.getEmail()).orElseThrow(()-> new RuntimeException("Email ko tồn tại"));
+            enrollment.setEmail(dto.getEmail());
+        }
         BeanUtils.copyProperties(dto, enrollment, "id", "enrolledAt", "course", "user");
         if (dto.getCourseId() != null) {
             Course course = courseRepository.findById(dto.getCourseId())
@@ -62,7 +67,6 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                     .orElseThrow(() -> new RuntimeException("Người dùng sở hữu không tồn tại"));
             enrollment.setUser(user);
         }
-
         enrollment.setUpdatedAt(LocalDateTime.now());
         enrollmentRepository.save(enrollment);
     }
@@ -89,7 +93,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Transactional
     public void createEnrollment(EnrollmentDTO dto) {
         Enrollment enrollment = new Enrollment();
-
+        if(dto.getEmail() != null) {
+            userRepository.findByEmail(dto.getEmail()).orElseThrow(()-> new RuntimeException("Email ko tồn tại"));
+            enrollment.setEmail(dto.getEmail());
+        }
         BeanUtils.copyProperties(dto, enrollment, "id");
 
         if (dto.getCourseId() != null) {
@@ -107,6 +114,25 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     public Page<Enrollment> getMyEnrollments(Long userId, String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("enrolledAt").descending());
         return enrollmentRepository.findByUserId(userId, keyword, pageable);
+    }
+
+
+    @Override
+    public Map<String, Object> prepareCheckoutData(Long courseId, Long enrollmentId, Long userId) {
+        Map<String, Object> data = new HashMap<>();
+        User user = userRepository.findById(userId).orElse(null);
+
+        if (enrollmentId != null) {
+            Enrollment e = enrollmentRepository.findById(enrollmentId).orElse(null);
+            if (e != null) {
+                data.put("courseTitle", e.getCourse().getTitle());
+                data.put("fee", e.getFee());
+                data.put("fullName", e.getFullName());
+                data.put("mobile", e.getMobile());
+                data.put("email", e.getEmail());
+            }
+        }
+        return data;
     }
 
 }
