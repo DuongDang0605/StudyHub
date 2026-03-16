@@ -44,32 +44,6 @@
                                 </select>
                                 <small class="text-muted">Tất cả bản ghi trong file sẽ được gán vào khóa học này.</small>
                             </div>
-
-                            <div class="mb-4">
-                                <label class="form-label text-white fw-bold">2. Nhân viên phụ trách (Assignee)*</label>
-
-                                <div th:if="${isOnlyOneManager}">
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-primary text-white border-0"><i class="fa fa-user"></i></span>
-                                        <input type="text" class="form-control bg-dark text-white border-0 py-2"
-                                               th:value="${fixedManager.fullName}" readonly>
-                                    </div>
-                                    <input type="hidden" name="adminId" th:value="${fixedManager.id}">
-                                    <small class="text-muted">Bạn đang thực hiện import cho chính mình.</small>
-                                </div>
-
-                                <div th:unless="${isOnlyOneManager}">
-                                    <select name="adminId" class="form-select bg-dark text-white border-0 py-2" required>
-                                        <option value="">-- Chọn nhân viên quản lý --</option>
-                                        <option th:each="u : ${admins}"
-                                                th:value="${u.id}"
-                                                th:text="${u.fullName} + ' (' + ${u.email} + ')'"></option>
-                                    </select>
-                                    <small class="text-muted">Chọn nhân viên sẽ quản lý danh sách học viên này.</small>
-                                    <p class="text-white">Debug: Số lượng Manager tìm thấy: <span th:text="${admins != null ? admins.size() : 'null'}"></span></p>
-                                </div>
-                            </div>
-
                             <div class="mb-4">
                                 <label class="form-label text-white fw-bold">3. Tệp dữ liệu Excel*</label>
                                 <input class="form-control bg-dark text-white border-0" type="file" name="file" accept=".xlsx" required>

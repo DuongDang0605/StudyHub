@@ -193,38 +193,33 @@ public class EnrollmentAdminController {
                 .anyMatch(ur -> ur.getRole().getName().equalsIgnoreCase("Admin"));
 
         List<Course> coursesList;
-
         if (isAdmin) {
-            List<User> managers = userService.getUsersByRole("Manager");
-            model.addAttribute("admins", managers);
-            model.addAttribute("isOnlyOneManager", false);
-
             coursesList = courseService.getAllCourses();
         } else {
-            model.addAttribute("fixedManager", currentUser);
-            model.addAttribute("admins", List.of(currentUser));
-            model.addAttribute("isOnlyOneManager", true);
-
             coursesList = courseService.getCoursesByInstructor(currentUser.getId());
         }
 
         model.addAttribute("courses", coursesList);
-
+        // Đã xóa phần lấy danh sách managers/admins
         return "admin/enrollment/enrollment-import";
     }
 
     @PostMapping("/import")
     public String handleImportExcel(@RequestParam("file") MultipartFile file,
                                     @RequestParam("courseId") Long courseId,
-                                    @RequestParam("adminId") Long adminId,
+                                    HttpSession session, // Thêm HttpSession để lấy user hiện tại
                                     RedirectAttributes ra) {
+        User currentUser = (User) session.getAttribute("loggedInUser");
+        if (currentUser == null) return "redirect:/auth/login";
+
         if (file.isEmpty()) {
             ra.addFlashAttribute("error", "Vui lòng chọn một file Excel để import!");
             return "redirect:/admin/enrollments/import-page";
         }
 
         try {
-            enrollmentService.importEnrollments(file, courseId, adminId);
+            // Sử dụng currentUser.getId() thay cho adminId từ request
+            enrollmentService.importEnrollments(file, courseId, currentUser.getId());
             ra.addFlashAttribute("message", "Import danh sách đăng ký thành công!");
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Lỗi khi import: " + e.getMessage());
