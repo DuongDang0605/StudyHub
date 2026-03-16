@@ -3,6 +3,7 @@ package org.example.studyhub.controller;
 import jakarta.servlet.http.HttpSession;
 import org.example.studyhub.dto.EnrollmentDTO;
 import org.example.studyhub.dto.UserDTO;
+import org.example.studyhub.model.Course;
 import org.example.studyhub.model.Enrollment;
 import org.example.studyhub.model.User;
 import org.example.studyhub.service.EnrollmentService;
@@ -11,6 +12,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
+
+import java.util.Map;
+
 @Controller
 @RequestMapping("/enroll")
 public class EnrollmentController {
@@ -37,5 +41,22 @@ public class EnrollmentController {
     @ResponseBody
     public EnrollmentDTO getDetails(@PathVariable Long id) {
         return enrollmentService.getEnrollmentById(id);
+    }
+
+    @GetMapping("/pay-checkout")
+    public String showCheckout(
+            @RequestParam(value = "courseId", required = false) Long courseId,
+            @RequestParam(value = "enrollmentId", required = false) Long enrollmentId,
+            Model model, HttpSession session) {
+        model.addAttribute("enrollmentId", enrollmentId);
+        User currentUser = (User) session.getAttribute("loggedInUser");
+        if (currentUser == null) return "redirect:/auth/login";
+
+        Map<String, Object> checkoutData = enrollmentService.prepareCheckoutData(courseId, enrollmentId, currentUser.getId());
+
+
+        model.addAllAttributes(checkoutData);
+
+        return "homepage/enrollment/checkout";
     }
 }

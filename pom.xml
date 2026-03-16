@@ -105,7 +105,8 @@
         <dependency>
             <groupId>vn.payos</groupId>
             <artifactId>payos-java</artifactId>
-            <version>1.0.1</version> </dependency>
+            <version>2.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
