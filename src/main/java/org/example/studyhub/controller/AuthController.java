@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.example.studyhub.model.User;
+import org.example.studyhub.service.UserService;
 
 import java.util.List;
 
@@ -88,14 +90,16 @@ public class AuthController {
     }
 
     @GetMapping("/verify")
-    public String verifyAccount(@RequestParam("token") String token, Model model, RedirectAttributes redirectAttributes) {
-        boolean isValid = userService.validateVerificationToken(token);
-        if (!isValid) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Link không hợp lệ hoặc đã hết hạn.");
-            return "redirect:/auth/login";
+    public String verifyAccount(@RequestParam("token") String token, RedirectAttributes redirectAttributes) {
+        boolean ok = userService.verifyEmailToken(token);
+        if (ok) {
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Xác thực tài khoản thành công. Vui lòng đăng nhập.");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Link không hợp lệ hoặc đã hết hạn.");
         }
-        model.addAttribute("token", token);
-        return "auth/setup-password";
+        return "redirect:/auth/login";
     }
 
     @PostMapping("/setup-password")
@@ -124,5 +128,29 @@ public class AuthController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/auth/login";
+    }
+    @GetMapping("/register")
+    public String showRegisterForm() {
+        return "auth/register";
+    }
+
+    @PostMapping("/register")
+    public String register(@RequestParam String fullName,
+                           @RequestParam String email,
+                           @RequestParam String password,
+                           @RequestParam String confirmPassword,
+                           RedirectAttributes ra) {
+        if (!password.equals(confirmPassword)) {
+            ra.addFlashAttribute("errorMessage", "Mat khau xac nhan khong khop.");
+            return "redirect:/auth/register";
+        }
+        try {
+            userService.registerByEmail(fullName, email, password);
+            ra.addFlashAttribute("successMessage", "Đăng ký thành công. Vui lòng kiểm tra email để xác thực.");
+            return "redirect:/auth/login";
+        } catch (Exception e) {
+            ra.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/auth/register";
+        }
     }
 }

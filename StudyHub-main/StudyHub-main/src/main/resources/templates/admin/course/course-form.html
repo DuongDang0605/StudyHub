@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Course Details - StudyHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="/static/css/main.css" rel="stylesheet"/>
+  
+</head>
+<body>
+<div class="app-wrapper">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">S</div>
+      <span class="logo-text">StudyHub</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Overview</div>
+      <a class="nav-item" href="/admin/dashboard"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+      <div class="nav-label">System</div>
+      <a class="nav-item" href="/admin/settings"><i class="bi bi-sliders"></i> Settings</a>
+      <a class="nav-item" href="/admin/users"><i class="bi bi-people-fill"></i> User Accounts</a>
+      <div class="nav-label">Training</div>
+      <a class="nav-item active" href="/admin/courses"><i class="bi bi-play-circle-fill"></i> Courses</a>
+      <a class="nav-item" href="/admin/enrollments"><i class="bi bi-journal-check"></i> Enrollments <span class="nav-badge badge bg-warning text-dark ms-auto">5</span></a>
+      <div class="nav-label">Blog</div>
+      <a class="nav-item" href="/admin/posts"><i class="bi bi-file-earmark-richtext-fill"></i> Posts</a>
+      <a class="nav-item" href="/admin/comments"><i class="bi bi-chat-dots-fill"></i> Comments</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="dropdown">
+        <div class="user-card" data-bs-toggle="dropdown">
+          <div class="avatar-circle">A</div>
+          <div style="flex:1;min-width:0"><div class="user-name">Administrator</div><div class="user-role">Admin</div></div>
+          <i class="bi bi-three-dots-vertical text-muted" style="font-size:.75rem"></i>
+        </div>
+        <ul class="dropdown-menu shadow border-0" style="border-radius:12px;min-width:170px">
+          <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2"></i>Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Log Out</a></li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content">
+
+  <header class="topbar">
+    <button class="topbar-btn" id="sidebarToggle" style="display:flex"><i class="bi bi-list fs-5"></i></button>
+    <div style="flex:1">
+      <div class="topbar-title">Course Details</div>
+      <nav><ol class="breadcrumb mb-0" style="font-size:.72rem">
+        <li class="breadcrumb-item"><a href="/admin/dashboard" class="text-muted"><i class="bi bi-house-fill"></i></a></li>
+        <li class="breadcrumb-item"><a href="/admin/courses" class="text-muted">Courses</a></li><li class="breadcrumb-item active text-muted">Details</li>
+      </ol></nav>
+    </div>
+    <div class="dropdown">
+      <button class="topbar-btn" data-bs-toggle="dropdown"><i class="bi bi-bell-fill"></i><span class="notif-dot"></span></button>
+      <div class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="width:270px;border-radius:14px">
+        <div class="px-2 pb-2 border-bottom mb-1"><strong style="font-size:.82rem">Notifications</strong></div>
+        <a class="dropdown-item rounded-3 py-2" href="#"><span style="font-size:.8rem">5 enrollments pending</span></a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <div class="avatar-circle" data-bs-toggle="dropdown" style="cursor:pointer;border:2px solid var(--primary-light)">A</div>
+      <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius:12px;min-width:170px;margin-top:6px">
+        <li class="px-3 py-2 border-bottom"><div style="font-weight:700;font-size:.82rem">Administrator</div></li>
+        <li><a class="dropdown-item mt-1" href="/profile"><i class="bi bi-person me-2"></i>Profile</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Log Out</a></li>
+      </ul>
+    </div>
+  </header>
+    <main class="page-body">
+
+      <div class="row g-4">
+        <div class="col-12 col-xl-8">
+          <div class="card-sh">
+            <div class="card-header-sh">
+              <h6 class="card-title-sh"><i class="bi bi-play-circle-fill me-2 text-primary"></i>Course Details</h6>
+              <a href="/admin/courses" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back</a>
+            </div>
+            <div class="card-body-sh">
+              <form th:action="@{${formMode == 'create' ? '/admin/courses/new' : '/admin/courses/' + course.id}}" 
+                    th:method="${formMode == 'create' ? 'POST' : 'POST'}">
+                <!-- Hidden field cho method override khi update -->
+                <input type="hidden" name="_method" th:value="${formMode == 'edit' ? 'PUT' : ''}" th:if="${formMode == 'edit'}"/>
+                
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label">Title *</label>
+                    <input type="text" class="form-control" name="title" th:value="${course.title}" 
+                           th:readonly="${formMode == 'detail'}" required/>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" name="categoryId" th:disabled="${formMode == 'detail'}">
+                      <option value="" th:if="${formMode == 'create'}">Select Category</option>
+                      <option th:each="category : ${categories}" 
+                              th:value="${category.id}" 
+                              th:text="${category.value}"
+                              th:selected="${course.categoryId != null and course.categoryId == category.id}">Programming</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Manager</label>
+                    <select class="form-select" name="instructorId" th:disabled="${formMode == 'detail'}">
+                      <option value="" th:if="${formMode == 'create'}">Select Manager</option>
+                      <option th:each="instructor : ${instructors}" 
+                              th:value="${instructor.id}" 
+                              th:text="${instructor.fullName}"
+                              th:selected="${course.instructorId != null and course.instructorId == instructor.id}">Kien Nguyen</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Level</label>
+                    <select class="form-select" name="levelId" th:disabled="${formMode == 'detail'}">
+                      <option value="" th:if="${formMode == 'create'}">Select Level</option>
+                      <option th:each="level : ${levels}" 
+                              th:value="${level.id}" 
+                              th:text="${level.value}"
+                              th:selected="${course.levelId != null and course.levelId == level.id}">Beginner</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Duration (hours) *</label>
+                    <input type="number" class="form-control" name="duration" th:value="${course.duration}" 
+                           th:readonly="${formMode == 'detail'}" required/>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Listed Price ($) *</label>
+                    <input type="number" class="form-control" name="listedPrice" th:value="${course.listedPrice}" 
+                           th:readonly="${formMode == 'detail'}" required/>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Sale Price ($)</label>
+                    <input type="number" class="form-control" name="salePrice" th:value="${course.salePrice}" 
+                           th:readonly="${formMode == 'detail'}"/>
+                  </div>
+                  <div class="col-12">
+                    <div class="d-flex gap-4">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="published" name="status" 
+                               th:checked="${course.status == 'ACTIVE'}" th:disabled="${formMode == 'detail'}"/>
+                        <label class="form-check-label fw-600" for="published">Published</label>
+                      </div>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="featured" name="isFeatured" 
+                               th:checked="${course.isFeatured}" th:disabled="${formMode == 'detail'}"/>
+                        <label class="form-check-label fw-600" for="featured">Featured</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="description" rows="4" 
+                              th:readonly="${formMode == 'detail'}" th:text="${course.description}"></textarea>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Thumbnail URL</label>
+                    <input type="text" class="form-control" name="thumbnail" th:value="${course.thumbnail}" 
+                           th:readonly="${formMode == 'detail'}"/>
+                  </div>
+                </div>
+                
+                <!-- Buttons -->
+                <div class="d-flex gap-2 mt-4" th:if="${formMode != 'detail'}">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-floppy-fill me-1"></i>
+                    <span th:text="${formMode == 'create' ? 'Create Course' : 'Save Changes'}">Save Changes</span>
+                  </button>
+                  <a href="/admin/courses" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-lg me-1"></i>Cancel
+                  </a>
+                </div>
+                
+                <div class="d-flex gap-2 mt-4" th:if="${formMode == 'detail'}">
+                  <a th:href="@{'/admin/courses/' + ${course.id} + '/edit'}" class="btn btn-primary">
+                    <i class="bi bi-pencil-fill me-1"></i>Edit Course
+                  </a>
+                  <a href="/admin/courses" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Back
+                  </a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <!-- Thumbnail -->
+        <div class="col-12 col-xl-4">
+          <div class="card-sh">
+            <div class="card-header-sh"><h6 class="card-title-sh"><i class="bi bi-image-fill me-2 text-primary"></i>Thumbnail</h6></div>
+            <div class="card-body-sh text-center">
+              <img id="thumbPreview" src="https://via.placeholder.com/300x180/1a56db/ffffff?text=Course+Thumbnail"
+                   style="width:100%;border-radius:8px;margin-bottom:12px"/>
+              <label class="btn btn-ghost w-100" style="cursor:pointer">
+                <i class="bi bi-upload me-1"></i>Change Thumbnail
+                <input type="file" class="img-pick d-none" data-preview="#thumbPreview" accept="image/*"/>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+  <footer class="app-footer">
+    <span>StudyHub v1 &copy; 2026</span>
+    <span>Contact: <a href="mailto:contact@studyhub.com" style="color:var(--primary)">contact@studyhub.com</a></span>
+  </footer>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/js/app.js"></script>
+
+</body>
+</html>
