@@ -66,6 +66,8 @@ public class Enrollment {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+    @Column(name = "order_code", unique = true)
+    private Long orderCode;
 
     @PrePersist
     protected void onCreate() {

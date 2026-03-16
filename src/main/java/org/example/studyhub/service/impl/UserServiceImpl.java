@@ -322,4 +322,9 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         return true;
     }
+
+    @Override
+    public List<User> getUsersByRole(String roleName) {
+        return userRepository.findUsersByRoleName(roleName);
+    }
 }
