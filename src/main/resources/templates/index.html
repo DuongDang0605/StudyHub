@@ -44,6 +44,43 @@
             </div>
         </div>
 
+        <div class="container-fluid pt-4 px-4">
+            <div class="bg-secondary rounded p-4">
+                <form class="mb-3" method="get" th:action="@{/home}">                    <div class="input-group">
+                        <input id="courseSearch"
+                               type="text"
+                               class="form-control"
+                               name="keyword"
+                               placeholder="Tìm theo tên khóa học..."
+                               th:value="${keyword}"
+                               autocomplete="off">
+                        <button class="btn btn-primary" type="submit">Tìm</button>
+                    </div>
+                </form>
+                <div id="courseList" class="row g-3" th:if="${publicCourses != null and !#lists.isEmpty(publicCourses)}">
+                    <div class="col-md-4" th:each="course : ${publicCourses}">
+                        <div class="card h-100">
+                            <img class="card-img-top"
+                                 style="height:180px;object-fit:cover"
+                                 th:src="${course.thumbnail != null and !#strings.isEmpty(course.thumbnail) ? course.thumbnail : '/img/user.jpg'}"
+                                 alt="thumbnail">
+                            <div class="card-body">
+                                <h6 class="card-title" th:text="${course.title}"></h6>
+                                <p class="text-muted mb-1" th:text="${course.instructor != null ? 'By ' + course.instructor.fullName : 'By Unknown'}"></p>
+                                <p class="card-text text-muted"
+                                   th:text="${course.description != null ? course.description : 'Không có mô tả'}">
+                                </p>
+                                <a class="btn btn-primary btn-sm" th:href="@{/courses}">Enroll Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-light mb-0" th:if="${publicCourses == null or #lists.isEmpty(publicCourses)}">
+                    Chưa có khóa học công khai.
+                </p>
+            </div>
+        </div>
         <div th:replace="~{fragments/footer :: footer}"></div>
     </div>
     <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>

@@ -27,6 +27,9 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.findAllByStatus("PUBLISHED");
     }
     @Override
+    public List<Course> findPublicCourses(String keyword, Long categoryId) {
+        String k = (keyword == null ) ? "" : keyword.trim();
+        return courseRepository.findPublicCourses(k, categoryId);
     public List<Course> getCoursesByInstructor(Long instructorId) {
         return courseRepository.findByInstructor_Id(instructorId);
     }
