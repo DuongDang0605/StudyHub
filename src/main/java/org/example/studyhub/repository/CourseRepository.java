@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -16,5 +17,17 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
     Page<Course> findTopRecentCourses(Pageable pageable);
     List<Course> findAllByOrderByTitleAsc();
 
-    List<Course> findAllByStatus(String published);
+    @Query("""
+    SELECT c FROM Course c
+    LEFT JOIN FETCH c.instructor
+    LEFT JOIN FETCH c.level
+    LEFT JOIN FETCH c.category
+    WHERE c.status = 'PUBLISHED'
+      AND (:keyword = '' OR LOWER(c.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
+      OR LOWER(COALESCE(c.description, '')) LIKE LOWER(CONCAT('%', :keyword, '%')))
+      AND (:categoryId IS NULL OR c.category.id = :categoryId)
+    ORDER BY c.createdAt DESC
+""")
+    List<Course> findPublicCourses(@Param("keyword") String keyword, @Param("categoryId") Long categoryId);
+    List<Course> findAllByStatus(String status);
 }
