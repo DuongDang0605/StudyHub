@@ -30,7 +30,6 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
     ORDER BY c.createdAt DESC
 """)
     List<Course> findPublicCourses(@Param("keyword") String keyword, @Param("categoryId") Long categoryId);
-    List<Course> findAllByStatus(String status);
     List<Course> findAllByStatus(String published);
     Optional<Course> findByEnrollmentsId(Long enrollmentsId);
 
