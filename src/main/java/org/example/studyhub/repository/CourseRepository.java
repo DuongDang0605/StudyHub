@@ -19,4 +19,6 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
 
     List<Course> findAllByStatus(String published);
     Optional<Course> findByEnrollmentsId(Long enrollmentsId);
+
+    List<Course> findByInstructor_Id(Long instructorId);
 }

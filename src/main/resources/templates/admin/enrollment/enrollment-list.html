@@ -22,10 +22,18 @@
       <div class="bg-secondary rounded p-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
           <h3 class="mb-0 text-white">Course Enrollments</h3>
-          <div class="d-flex align-items-center justify-content-between mb-4">
-            <h6 class="mb-0">Enrollment Management</h6>
+          <div class="d-flex gap-2">
+            <a th:href="@{/admin/enrollments/import-page}" class="btn btn-outline-success btn-sm">
+              <i class="fa fa-file-import me-2"></i>Import Excel
+            </a>
+
+            <a th:href="@{/admin/enrollments/export(courseId=${selectedCourseId}, status=${selectedStatus}, keyword=${keyword})}"
+               class="btn btn-success btn-sm">
+              <i class="fa fa-file-export me-2"></i>Export Excel
+            </a>
+
             <a th:href="@{/admin/enrollments/add}" class="btn btn-primary btn-sm">
-              <i class="fa fa-plus me-2"></i>Add New Enrollment
+              <i class="fa fa-plus me-2"></i>Add New
             </a>
           </div>
         </div>
@@ -71,27 +79,27 @@
             </thead>
             <tbody>
             <tr th:each="e : ${enrollments}">
-              <td th:text="${e.id}">38</td>
+              <td th:text="${e.id}"></td>
               <td>
-                <div class="text-white fw-bold" th:text="${e.course.title}">Course Title</div>
+                <div class="text-white fw-bold" th:text="${e.course.title}"></div>
                 <small class="text-muted">Fee: <span th:text="${e.fee}"></span></small>
               </td>
               <td>
-                <div class="text-white" th:text="${e.fullName}">Kien Nguyen</div>
-                <small class="text-muted" th:text="${e.email}">email@example.com</small>
+                <div class="text-white" th:text="${e.fullName}"></div>
+                <small class="text-muted" th:text="${e.email}"></small>
               </td>
-              <td th:text="${#temporals.format(e.enrolledAt, 'yyyy-MM-dd HH:mm:ss')}">Date</td>
+              <td th:text="${#temporals.format(e.enrolledAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
               <td>
-                                    <span class="badge"
-                                          th:classappend="${e.status == 'APPROVED' ? 'bg-success' : (e.status == 'PENDING' ? 'bg-warning text-dark' : 'bg-danger')}"
-                                          th:text="${e.status}">STATUS</span>
+                                <span class="badge"
+                                      th:classappend="${e.status == 'APPROVED' ? 'bg-success' : (e.status == 'PENDING' ? 'bg-warning text-dark' : 'bg-danger')}"
+                                      th:text="${e.status}"></span>
               </td>
               <td>
                 <div class="d-flex align-items-center">
                   <div class="progress w-100 bg-dark me-2" style="height: 5px;">
                     <div class="progress-bar bg-primary" th:style="'width:' + ${e.progress} + '%'"></div>
                   </div>
-                  <small th:text="${e.progress}"></small>
+                  <small th:text="${e.progress} + '%'"></small>
                 </div>
               </td>
               <td class="text-center">
@@ -101,7 +109,7 @@
                   </a>
                   <a th:href="@{/admin/enrollments/delete/{id}(id=${e.id})}"
                      class="btn btn-sm btn-outline-danger"
-                     onclick="return confirm('Bạn có chắc chắn muốn hủy (xóa mềm) đơn đăng ký này không?')">
+                     onclick="return confirm('Bạn có chắc chắn muốn hủy đơn này?')">
                     <i class="fa fa-trash"></i>
                   </a>
                 </div>
@@ -119,7 +127,7 @@
                 <a class="page-link bg-dark border-0" th:href="@{/admin/enrollments(page=${currentPage - 1}, courseId=${selectedCourseId}, status=${selectedStatus}, keyword=${keyword})}">Previous</a>
               </li>
               <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${i == currentPage} ? 'active'">
-                <a class="page-link border-0" th:href="@{/admin/enrollments(page=${i}, courseId=${selectedCourseId}, status=${selectedStatus}, keyword=${keyword})}" th:text="${i + 1}">1</a>
+                <a class="page-link border-0" th:href="@{/admin/enrollments(page=${i}, courseId=${selectedCourseId}, status=${selectedStatus}, keyword=${keyword})}" th:text="${i + 1}"></a>
               </li>
               <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
                 <a class="page-link bg-dark border-0" th:href="@{/admin/enrollments(page=${currentPage + 1}, courseId=${selectedCourseId}, status=${selectedStatus}, keyword=${keyword})}">Next</a>
@@ -129,9 +137,35 @@
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content bg-secondary text-white">
+          <form th:action="@{/admin/enrollments/import}" method="post" enctype="multipart/form-data">
+            <div class="modal-header border-0">
+              <h5 class="modal-title" id="importModalLabel">Import Enrollments from Excel</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="file" class="form-label">Choose Excel File (.xlsx)</label>
+                <input class="form-control bg-dark text-white border-0" type="file" name="file" id="file" accept=".xlsx" required>
+              </div>
+              <small class="text-muted">Lưu ý: File Excel phải tuân thủ đúng định dạng các cột theo mẫu.</small>
+            </div>
+            <div class="modal-footer border-0">
+              <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Start Import</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <div th:replace="~{fragments/footer :: footer}"></div>
   </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/main.js}"></script>

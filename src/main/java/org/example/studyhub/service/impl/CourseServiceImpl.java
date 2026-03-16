@@ -26,4 +26,8 @@ public class CourseServiceImpl implements CourseService {
    public List<Course> getActiveCoursesByStatus(){
         return courseRepository.findAllByStatus("PUBLISHED");
     }
+    @Override
+    public List<Course> getCoursesByInstructor(Long instructorId) {
+        return courseRepository.findByInstructor_Id(instructorId);
+    }
 }

@@ -1,4 +1,4 @@
-package org.example.studyhub.service;
+package org.example.studyhub.service.impl;
 
 import org.example.studyhub.model.Course;
 import org.example.studyhub.model.Enrollment;

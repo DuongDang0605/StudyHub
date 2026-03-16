@@ -1,11 +1,10 @@
 package org.example.studyhub.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.studyhub.model.Enrollment;
 import org.example.studyhub.repository.EnrollmentRepository;
-import org.example.studyhub.service.PaymentService;
+import org.example.studyhub.service.impl.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

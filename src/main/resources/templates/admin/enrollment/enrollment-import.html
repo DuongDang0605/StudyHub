@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Import Enrollment - StudyHub Admin</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container-fluid position-relative d-flex p-0">
+    <div th:replace="~{fragments/sidebar-admin :: sidebar}"></div>
+    <div class="content">
+        <div th:replace="~{fragments/header :: header}"></div>
+        <div class="container-fluid pt-4 px-4">
+            <div class="row g-4 justify-content-center">
+                <div class="col-sm-12 col-xl-8">
+                    <div class="bg-secondary rounded p-4 shadow-sm">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <h3 class="mb-0 text-white"><i class="fa fa-file-import me-3 text-primary"></i>Import Enrollment</h3>
+                            <a th:href="@{/admin/enrollments}" class="btn btn-sm btn-outline-primary">Quay lại danh sách</a>
+                        </div>
+
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fa fa-exclamation-circle me-2"></i><span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+
+                        <form th:action="@{/admin/enrollments/import}" method="post" enctype="multipart/form-data">
+                            <div class="mb-4">
+                                <label class="form-label text-white fw-bold">1. Chọn Khóa học áp dụng*</label>
+                                <select name="courseId" class="form-select bg-dark text-white border-0 py-2" required>
+                                    <option value="">-- Chọn khóa học --</option>
+                                    <option th:each="c : ${courses}"
+                                            th:value="${c.id}"
+                                            th:text="${c.title}"></option>
+                                </select>
+                                <small class="text-muted">Tất cả bản ghi trong file sẽ được gán vào khóa học này.</small>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label text-white fw-bold">2. Nhân viên phụ trách (Assignee)*</label>
+
+                                <div th:if="${isOnlyOneManager}">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-primary text-white border-0"><i class="fa fa-user"></i></span>
+                                        <input type="text" class="form-control bg-dark text-white border-0 py-2"
+                                               th:value="${fixedManager.fullName}" readonly>
+                                    </div>
+                                    <input type="hidden" name="adminId" th:value="${fixedManager.id}">
+                                    <small class="text-muted">Bạn đang thực hiện import cho chính mình.</small>
+                                </div>
+
+                                <div th:unless="${isOnlyOneManager}">
+                                    <select name="adminId" class="form-select bg-dark text-white border-0 py-2" required>
+                                        <option value="">-- Chọn nhân viên quản lý --</option>
+                                        <option th:each="u : ${admins}"
+                                                th:value="${u.id}"
+                                                th:text="${u.fullName} + ' (' + ${u.email} + ')'"></option>
+                                    </select>
+                                    <small class="text-muted">Chọn nhân viên sẽ quản lý danh sách học viên này.</small>
+                                    <p class="text-white">Debug: Số lượng Manager tìm thấy: <span th:text="${admins != null ? admins.size() : 'null'}"></span></p>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label text-white fw-bold">3. Tệp dữ liệu Excel*</label>
+                                <input class="form-control bg-dark text-white border-0" type="file" name="file" accept=".xlsx" required>
+                                <div class="mt-2 d-flex justify-content-between">
+                                    <small class="text-info"><i class="fa fa-info-circle me-1"></i> Định dạng: Cột 1 (Email), Cột 2 (Status)</small>
+                                    <small><a href="#" class="text-primary text-decoration-none"><i class="fa fa-download me-1"></i>Tải file mẫu</a></small>
+                                </div>
+                            </div>
+
+                            <hr class="my-4 border-secondary">
+
+                            <div class="text-end">
+                                <a th:href="@{/admin/enrollments}" class="btn btn-outline-light px-4 me-2">Hủy bỏ</a>
+                                <button type="submit" class="btn btn-primary px-5 shadow">
+                                    <i class="fa fa-upload me-2"></i>Bắt đầu Import
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/footer :: footer}"></div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
