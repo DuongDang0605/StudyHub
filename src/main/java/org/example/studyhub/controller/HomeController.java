@@ -39,7 +39,9 @@ public class HomeController {
 
         if ("settings".equals(section)) {
             String statusFilter = "ALL".equalsIgnoreCase(settingStatus) ? null : settingStatus;
-            String keywordFilter = (settingKeyword == null || settingKeyword.isBlank()) ? null : settingKeyword.trim();
+            String keywordFilter = (settingKeyword == null || settingKeyword.isBlank())
+                    ? null
+                    : "%" + settingKeyword.trim().toLowerCase() + "%";
 
             model.addAttribute("settingTypes",
                     settingRepository.findByTypeIsNullAndStatusOrderByNameAsc("ACTIVE"));

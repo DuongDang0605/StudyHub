@@ -27,6 +27,9 @@ public interface SettingRepository extends JpaRepository<Setting, Long> {
    WHERE s.type IS NOT NULL
      AND (:typeId IS NULL OR t.id = :typeId)
      AND (:status IS NULL OR s.status = :status)
+     AND (:keyword IS NULL
+          OR LOWER(s.name) LIKE :keyword
+          OR LOWER(COALESCE(s.value, '')) LIKE :keyword)
    ORDER BY s.id ASC
    """,
             countQuery = """
@@ -36,9 +39,24 @@ public interface SettingRepository extends JpaRepository<Setting, Long> {
    WHERE s.type IS NOT NULL
      AND (:typeId IS NULL OR t.id = :typeId)
      AND (:status IS NULL OR s.status = :status)
+     AND (:keyword IS NULL
+          OR LOWER(s.name) LIKE :keyword
+          OR LOWER(COALESCE(s.value, '')) LIKE :keyword)
    """)
     Page<Setting> searchSettings(@Param("typeId") Long typeId,
                                  @Param("status") String status,
                                  @Param("keyword") String keyword,
                                  Pageable pageable);
+
+
+    @Query("""
+    SELECT COUNT(s) > 0
+    FROM Setting s
+    WHERE LOWER(s.name) = LOWER(:name)
+      AND ((:typeId IS NULL AND s.type IS NULL) OR (s.type.id = :typeId))
+      AND (:excludeId IS NULL OR s.id <> :excludeId)
+""")
+    boolean existsDuplicateNameInType(@Param("name") String name,
+                                      @Param("typeId") Long typeId,
+                                      @Param("excludeId") Long excludeId);
 }
