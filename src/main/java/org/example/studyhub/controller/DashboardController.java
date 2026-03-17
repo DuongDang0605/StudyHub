@@ -2,6 +2,7 @@ package org.example.studyhub.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.example.studyhub.annotation.RequireRole;
 import org.example.studyhub.dto.ChapterDTO;
 import org.example.studyhub.dto.CourseDTO;
 import org.example.studyhub.model.User;
@@ -17,6 +18,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin")
+@RequireRole({"Admin","Manager"})
 public class DashboardController {
 
     private final DashboardService dashboardService;

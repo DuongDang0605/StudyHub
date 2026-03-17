@@ -1,5 +1,6 @@
 package org.example.studyhub.controller;
 
+import org.example.studyhub.annotation.RequireRole;
 import org.example.studyhub.dto.CourseDTO;
 import org.example.studyhub.repository.SettingRepository;
 import org.example.studyhub.service.CourseService;
@@ -80,6 +81,7 @@ public class HomeController {
                 .map(c -> new CourseDTO(c.getId(), c.getTitle(), c.getThumbnail(), c.getDescription()))
                 .toList();
     }
+    @RequireRole("Admin")
     @GetMapping("/settings/toggle/{id}")
     public String toggleSettingStatus(@PathVariable Long id,
                                       @RequestParam(required = false) Long settingTypeId,

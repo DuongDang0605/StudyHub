@@ -2,6 +2,7 @@ package org.example.studyhub.controller;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.example.studyhub.annotation.RequireRole;
 import org.example.studyhub.dto.EnrollmentDTO;
 import org.example.studyhub.model.Course;
 import org.example.studyhub.model.Enrollment;
@@ -28,6 +29,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/admin/enrollments")
+@RequireRole({"Admin","Manager"})
 public class EnrollmentAdminController {
 
     @Autowired

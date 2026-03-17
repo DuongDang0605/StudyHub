@@ -19,13 +19,14 @@ public class AuthInterceptor implements HandlerInterceptor {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("loggedInUser");
 
+        // 1. Kiểm tra nếu chưa đăng nhập
         if (user == null) {
             session.setAttribute("interceptedError", "Bạn cần đăng nhập để truy cập trang này.");
             response.sendRedirect(request.getContextPath() + "/auth/login");
             return false;
         }
 
-
+        // 2. Kiểm tra quyền (Role)
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
 
@@ -35,7 +36,6 @@ public class AuthInterceptor implements HandlerInterceptor {
             }
 
             if (requireRole != null) {
-
                 List<String> userRoles = user.getUserRoles().stream()
                         .map(ur -> ur.getRole().getName())
                         .toList();
@@ -49,7 +49,13 @@ public class AuthInterceptor implements HandlerInterceptor {
                 }
 
                 if (!hasPermission) {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập chức năng này.");
+                    // SỬA Ở ĐÂY: Lưu lỗi vào session và đẩy về trang login giống như khi chưa đăng nhập
+                    session.setAttribute("interceptedError", "Bạn không có quyền truy cập chức năng này.");
+
+                    // Nếu Controller Login của bạn đang bắt thuộc tính "errorMessage" thay vì "interceptedError",
+                    // bạn có thể đổi thành: session.setAttribute("errorMessage", "...");
+
+                    response.sendRedirect(request.getContextPath() + "/auth/login");
                     return false;
                 }
             }

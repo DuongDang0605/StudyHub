@@ -1,5 +1,6 @@
 package org.example.studyhub.controller;
 
+import org.example.studyhub.annotation.RequireRole;
 import org.example.studyhub.dto.SettingDTO;
 import org.example.studyhub.dto.UserDTO;
 import org.example.studyhub.service.SettingService;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/users")
+@RequireRole("Admin")
 public class UserController {
     @Autowired
     private UserService userService;

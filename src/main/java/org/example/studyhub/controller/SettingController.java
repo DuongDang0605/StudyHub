@@ -1,5 +1,6 @@
 package org.example.studyhub.controller;
 
+import org.example.studyhub.annotation.RequireRole;
 import org.example.studyhub.dto.SettingDTO;
 import org.example.studyhub.mapper.SettingMapper;
 import org.example.studyhub.model.Setting;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/setting")
+@RequireRole("Admin")
 public class SettingController {
 
     private final SettingRepository settingRepository;
