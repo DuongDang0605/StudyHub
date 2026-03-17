@@ -28,105 +28,101 @@
   <div th:replace="~{fragments/sidebar-admin :: sidebar}"></div>
 
   <div class="content">
+
     <div th:replace="~{fragments/header :: header}"></div>
 
-    <div class="container-fluid pt-4 px-4">
-      <div class="bg-secondary rounded p-4 h-100">
+    <div class="container-fluid pt-4 px-4" th:if="${section == 'settings'}">
+      <div class="bg-secondary rounded p-4">
 
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h4 class="mb-0">System Settings</h4>
-          <a href="/setting/detail" class="btn btn-primary fw-medium px-3 rounded-1 shadow-sm">
+          <h5 class="mb-0 text-white"><i class="fa fa-sliders-h me-2"></i>Setting List</h5>
+          <a th:href="@{/setting/new}" class="btn btn-primary fw-medium px-3 rounded-1 shadow-sm">
             <i class="fa fa-plus me-2"></i>Add New Setting
           </a>
         </div>
 
         <div class="bg-dark rounded p-3 mb-4">
-          <form action="/admin/settings" method="get">
-            <div class="row g-3 align-items-center">
+          <form class="row g-3 align-items-center" method="get" th:action="@{/home}">
+            <input type="hidden" name="section" value="settings"/>
+            <input type="hidden" name="page" value="0"/>
+            <input type="hidden" name="size" th:value="${pageSize != null ? pageSize : 5}"/>
 
-              <div class="col-12 col-md-4">
-                <div class="input-group">
-                  <span class="input-group-text bg-secondary border-0"><i class="fa fa-search text-muted"></i></span>
-                  <input type="text" name="keyword" class="form-control bg-secondary border-0 text-white"
-                         placeholder="Search by name or value...">
-                </div>
-              </div>
+            <div class="col-12 col-md-3">
+              <select class="form-select bg-secondary border-0 text-white" name="settingTypeId" title="Setting Type">
+                <option value="">All Types</option>
+                <option th:each="t : ${settingTypes}"
+                        th:value="${t.id}"
+                        th:text="${t.name}"
+                        th:selected="${selectedTypeId != null and selectedTypeId == t.id}">
+                </option>
+              </select>
+            </div>
 
-              <div class="col-6 col-md-3">
-                <select name="type" class="form-select bg-secondary border-0 text-white">
-                  <option value="">All Types</option>
-                  <option value="User Role">User Role</option>
-                  <option value="Course Category">Course Category</option>
-                  <option value="Course Level">Course Level</option>
-                </select>
-              </div>
+            <div class="col-12 col-md-3">
+              <select class="form-select bg-secondary border-0 text-white" name="settingStatus" title="Setting Status">
+                <option value="ALL" th:selected="${selectedStatus == null or selectedStatus == 'ALL'}">All Statuses</option>
+                <option value="ACTIVE" th:selected="${selectedStatus == 'ACTIVE'}">Active</option>
+                <option value="INACTIVE" th:selected="${selectedStatus == 'INACTIVE'}">Inactive</option>
+              </select>
+            </div>
 
-              <div class="col-6 col-md-3">
-                <select name="status" class="form-select bg-secondary border-0 text-white">
-                  <option value="">All Statuses</option>
-                  <option value="ACTIVE">Active</option>
-                  <option value="INACTIVE">Inactive</option>
-                </select>
-              </div>
+            <div class="col-12 col-md-4">
+              <input class="form-control bg-secondary border-0 text-white" name="settingKeyword"
+                     placeholder="Enter keyword(s) to search..."
+                     th:value="${settingKeyword}">
+            </div>
 
-              <div class="col-12 col-md-2 d-flex gap-2">
-                <button type="submit" class="btn btn-primary flex-grow-1" title="Filter">
-                  <i class="fa fa-filter"></i>
-                </button>
-                <a href="/admin/settings" class="btn btn-outline-primary" title="Reset">
-                  <i class="fa fa-undo"></i>
-                </a>
-              </div>
+            <div class="col-12 col-md-2 d-flex gap-2">
+              <button class="btn btn-primary w-100 fw-medium" type="submit">
+                <i class="fa fa-search me-1"></i>Search
+              </button>
             </div>
           </form>
         </div>
 
         <div class="table-responsive">
-          <table class="table text-start align-middle table-bordered table-hover mb-0">
+          <table class="table table-bordered table-hover align-middle mb-0 text-light">
             <thead>
             <tr class="text-white">
-              <th style="width: 5%">ID</th>
-              <th style="width: 25%">Name</th>
-              <th style="width: 20%">Type</th>
-              <th style="width: 15%">Value</th>
-              <th class="text-center" style="width: 10%">Priority</th>
-              <th class="text-center" style="width: 10%">Status</th>
-              <th class="text-center" style="width: 15%">Actions</th>
+              <th>Id</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Value</th>
+              <th>Priority</th>
+              <th class="text-center">Status</th>
+              <th class="text-center">Action</th>
             </tr>
             </thead>
-
             <tbody>
-            <tr th:if="${#lists.isEmpty(settings)}">
+            <tr th:if="${settings == null or #lists.isEmpty(settings)}">
               <td colspan="7" class="text-center text-muted py-4">No settings found.</td>
             </tr>
 
             <tr th:each="s : ${settings}">
-              <td th:text="${s.id}">1</td>
-
-              <td class="text-white fw-bold" th:text="${s.name}">Setting Name</td>
-
-              <td th:text="${s.type != null ? s.type.name : '-'}">Type Name</td>
-
-              <td th:text="${s.value != null ? s.value : '-'}">Value</td>
-
-              <td class="text-center" th:text="${s.priority}">1</td>
+              <td th:text="${s.id}"></td>
+              <td class="text-white fw-bold" th:text="${s.name}"></td>
+              <td th:text="${s.type != null ? s.type.name : '-'}"></td>
+              <td th:text="${s.value != null ? s.value : '-'}"></td>
+              <td th:text="${s.priority}"></td>
 
               <td class="text-center">
                                 <span class="badge"
                                       th:classappend="${s.status == 'ACTIVE'} ? 'bg-success' : 'bg-danger'"
-                                      th:text="${s.status}">Active</span>
+                                      th:text="${s.status}">
+                                </span>
               </td>
 
-              <td class="text-center">
+              <td class="text-center" th:with="active=${s.status != null and #strings.equalsIgnoreCase(s.status, 'ACTIVE')}">
                 <div class="d-flex justify-content-center gap-2">
-                  <a th:href="@{/admin/settings/edit/{id}(id=${s.id})}" class="btn btn-sm btn-outline-info" title="Edit">
+                  <a th:href="@{/setting/detail(id=${s.id})}" class="btn btn-sm btn-outline-info" title="Edit">
                     <i class="fa fa-edit"></i>
                   </a>
-                  <button type="button" class="btn btn-sm btn-outline-danger" title="Delete"
-                          th:data-url="@{/admin/settings/delete/{id}(id=${s.id})}"
-                          onclick="confirmAction('Are you sure you want to delete this setting?', this.getAttribute('data-url'))">
-                    <i class="fa fa-trash"></i>
-                  </button>
+                  <a th:href="@{/home/settings/toggle/{id}(id=${s.id},settingTypeId=${selectedTypeId},settingStatus=${selectedStatus},settingKeyword=${settingKeyword},page=${currentPage},size=${pageSize})}"
+                     class="btn btn-sm"
+                     th:classappend="${active} ? 'btn-outline-warning' : 'btn-outline-success'"
+                     th:title="${active} ? 'Deactivate' : 'Activate'">
+                    <i class="fa" th:classappend="${active} ? 'fa-ban' : 'fa-check-circle'"></i>
+                  </a>
                 </div>
               </td>
             </tr>
@@ -134,38 +130,50 @@
           </table>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mt-4">
-          <small class="text-muted">Page 1 of 3</small>
-          <nav>
-            <ul class="pagination mb-0">
-              <li class="page-item disabled">
-                <a class="page-link bg-dark border-secondary text-white" href="#">
-                  <i class="fa fa-angle-left"></i>
-                </a>
-              </li>
-              <li class="page-item active">
-                <a class="page-link border-secondary bg-primary text-white" href="#">1</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link border-secondary bg-dark text-white" href="#">2</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link border-secondary bg-dark text-white" href="#">3</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link bg-dark border-secondary text-white" href="#">
-                  <i class="fa fa-angle-right"></i>
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
+        <nav class="mt-4" th:if="${totalPages != null and totalPages > 1}">
+          <ul class="pagination pagination-sm mb-0 justify-content-end">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+              <a class="page-link bg-dark border-secondary text-white"
+                 th:href="@{/home(section='settings',
+                                page=${currentPage - 1},
+                                size=${pageSize},
+                                settingTypeId=${selectedTypeId},
+                                settingStatus=${selectedStatus},
+                                settingKeyword=${settingKeyword})}">«</a>
+            </li>
+
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${i == currentPage} ? 'active'">
+              <a class="page-link border-secondary"
+                 th:classappend="${i == currentPage} ? 'bg-primary text-white' : 'bg-dark text-white'"
+                 th:text="${i + 1}"
+                 th:href="@{/home(section='settings',
+                                page=${i},
+                                size=${pageSize},
+                                settingTypeId=${selectedTypeId},
+                                settingStatus=${selectedStatus},
+                                settingKeyword=${settingKeyword})}">1</a>
+            </li>
+
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+              <a class="page-link bg-dark border-secondary text-white"
+                 th:href="@{/home(section='settings',
+                                page=${currentPage + 1},
+                                size=${pageSize},
+                                settingTypeId=${selectedTypeId},
+                                settingStatus=${selectedStatus},
+                                settingKeyword=${settingKeyword})}">»</a>
+            </li>
+          </ul>
+        </nav>
 
       </div>
     </div>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
   </div>
+
   <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 </div>
 
@@ -175,7 +183,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script th:src="@{/js/main.js}"></script>
-
 <script th:src="@{/js/app.js}"></script>
+
 </body>
 </html>

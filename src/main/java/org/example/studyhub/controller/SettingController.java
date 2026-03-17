@@ -5,6 +5,8 @@ import org.example.studyhub.dto.SettingDTO;
 import org.example.studyhub.mapper.SettingMapper;
 import org.example.studyhub.model.Setting;
 import org.example.studyhub.repository.SettingRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +27,45 @@ public class SettingController {
         this.settingMapper = settingMapper;
     }
 
-    @GetMapping
-    public String setting(Model model) {
-        model.addAttribute("settings", settingRepository.findByTypeIsNotNullOrderByIdAsc());
+    @GetMapping() // Thay đổi đường dẫn này theo ý định routing của bạn (VD: /admin/settings)
+    public String getSettings(@RequestParam(required = false) Long settingTypeId,
+                              @RequestParam(defaultValue = "ALL") String settingStatus,
+                              @RequestParam(defaultValue = "") String settingKeyword,
+                              @RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "5") int size, // Đổi default size thành 5 cho hợp form
+                              Model model) {
+
+        // 1. Gắn biến section để Thymeleaf render đúng thẻ th:if="${section == 'settings'}"
+        model.addAttribute("section", "settings");
+
+        // 2. Xử lý logic Filter
+        String statusFilter = "ALL".equalsIgnoreCase(settingStatus) ? null : settingStatus;
+        String keywordFilter = (settingKeyword == null || settingKeyword.isBlank())
+                ? null
+                : "%" + settingKeyword.trim().toLowerCase() + "%";
+
+        // 3. Đổ dữ liệu các tùy chọn Filter ra View
+        model.addAttribute("settingTypes",
+                settingRepository.findByTypeIsNullAndStatusOrderByNameAsc("ACTIVE"));
+        model.addAttribute("selectedTypeId", settingTypeId);
+        model.addAttribute("selectedStatus", settingStatus);
+        model.addAttribute("settingKeyword", settingKeyword);
+
+        // 4. Truy vấn dữ liệu phân trang
+        var settingPage = settingRepository.searchSettings(
+                settingTypeId,
+                statusFilter,
+                keywordFilter,
+                PageRequest.of(page, size, Sort.by("id").ascending())
+        );
+
+        // 5. Đổ kết quả danh sách và thông số phân trang ra View
+        model.addAttribute("settings", settingPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", settingPage.getTotalPages());
+        model.addAttribute("pageSize", size);
+
+        // Trả về file HTML gốc chứa giao diện (nếu file của bạn tên là index.html)
         return "admin/setting/setting-list";
     }
 

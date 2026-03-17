@@ -28,48 +28,9 @@ public class HomeController {
     private SettingRepository settingRepository;
 
     @GetMapping
-    public String getHome(@RequestParam(defaultValue = "") String keyword,
-                          @RequestParam(defaultValue = "courses") String section,
-                          @RequestParam(required = false) Long settingTypeId,
-                          @RequestParam(defaultValue = "ALL") String settingStatus,
-                          @RequestParam(defaultValue = "") String settingKeyword,
-                          @RequestParam(defaultValue = "0") int page,
-                          @RequestParam(defaultValue = "2") int size,
-                          Model model) {
-        model.addAttribute("section", section);
-
-        if ("settings".equals(section)) {
-            String statusFilter = "ALL".equalsIgnoreCase(settingStatus) ? null : settingStatus;
-            String keywordFilter = (settingKeyword == null || settingKeyword.isBlank())
-                    ? null
-                    : "%" + settingKeyword.trim().toLowerCase() + "%";
-
-            model.addAttribute("settingTypes",
-                    settingRepository.findByTypeIsNullAndStatusOrderByNameAsc("ACTIVE"));
-            model.addAttribute("selectedTypeId", settingTypeId);
-            model.addAttribute("selectedStatus", settingStatus);
-            model.addAttribute("settingKeyword", settingKeyword);
-
-            var settingPage = settingRepository.searchSettings(
-                    settingTypeId,
-                    statusFilter,
-                    keywordFilter,
-                    PageRequest.of(page, size, Sort.by("id").ascending())
-            );
-
-            model.addAttribute("settings", settingPage.getContent());
-            model.addAttribute("currentPage", page);
-            model.addAttribute("totalPages", settingPage.getTotalPages());
-            model.addAttribute("pageSize", size);
-
-        } else {
-            Page<?> coursePage = courseService.findPublicCoursesPaged(keyword, null, page, size);
-            model.addAttribute("keyword", keyword);
-            model.addAttribute("publicCourses", coursePage.getContent());
-            model.addAttribute("courseCurrentPage", page);
-            model.addAttribute("courseTotalPages", coursePage.getTotalPages());
-            model.addAttribute("coursePageSize", size);
-        }
+    public String getHome(@RequestParam(defaultValue ="") String keyword, Model model) {
+        model.addAttribute("keyword",keyword);
+        model.addAttribute("publicCourses", courseService.findPublicCourses(keyword, null));
         return "index";
     }
 
