@@ -1,5 +1,6 @@
 package org.example.studyhub.repository;
 
+import org.apache.poi.sl.draw.geom.GuideIf;
 import org.example.studyhub.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,4 +42,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailVerifyToken(String token);
 
     Optional<User> findByUsername(String username);
+
+    @Query("SELECT ur.user FROM UserRole ur WHERE ur.role.name = :roleName AND ur.user.status = 'ACTIVE'")
+    List<User> findUsersByRoleName(@Param("roleName") String roleName);
 }

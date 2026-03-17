@@ -8,4 +8,5 @@ public interface CourseService {
     List<Course> getAllCourses();
     List<Course> findPublicCourses(String keyword, Long categoryId);
     List<Course> getActiveCoursesByStatus();
+    List<Course> getCoursesByInstructor(Long instructorId);
 }

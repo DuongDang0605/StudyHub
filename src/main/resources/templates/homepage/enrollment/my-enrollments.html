@@ -25,7 +25,7 @@
     .status-paid { background-color: rgba(25, 135, 84, 0.2); color: #198754; border: 1px solid #198754; }
     .status-pending { background-color: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid #ffc107; }
     .status-rejected { background-color: rgba(220, 53, 69, 0.2); color: #dc3545; border: 1px solid #dc3545; }
-
+    .status-cancelled {background-color: rgba(220, 53, 69, 0.2); color: #dc3545; border: 1px solid #dc3545; }
     .modal-content {
       background-color: #191C24;
       color: #6C7293;
@@ -75,19 +75,22 @@
                 <span th:if="${e.status == 'APPROVED'}" class="status-badge status-paid">Paid</span>
                 <span th:if="${e.status == 'PENDING'}" class="status-badge status-pending">Pending</span>
                 <span th:if="${e.status == 'REJECTED'}" class="status-badge status-rejected">Rejected</span>
+                <span th:if="${e.status == 'CANCELLED'}" class="status-badge status-cancelled">Cancelled</span>
               </td>
               <td>
                 <button th:if="${e.status == 'APPROVED'}"
                         class="btn btn-sm btn-primary"
                         th:onclick="'viewProgress(' + ${e.id} + ')'">Access</button>
 
-                <button th:if="${e.status == 'REJECTED'}"
+                <button th:if="${e.status == 'CANCELLED' || e.status == 'REJECTED'}"
                         class="btn btn-sm btn-outline-danger"
                         th:onclick="'viewRejection(' + ${e.id} + ')'">View Note</button>
 
                 <a th:if="${e.status == 'PENDING'}"
-                   class="btn btn-sm btn-warning"
-                   th:href="@{/course/enroll(courseId=${e.course.id}, enrollId=${e.id})}">Update</a>
+                   class="btn btn-sm btn-primary"
+                   th:href="@{/enroll/pay-checkout(enrollmentId=${e.id})}">
+                  <i class="fa fa-credit-card"></i> Update
+                </a>
               </td>
             </tr>
             </tbody>

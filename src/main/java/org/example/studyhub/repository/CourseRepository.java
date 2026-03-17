@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CourseRepository extends JpaRepository<Course,Long> {
 
@@ -30,4 +31,8 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
 """)
     List<Course> findPublicCourses(@Param("keyword") String keyword, @Param("categoryId") Long categoryId);
     List<Course> findAllByStatus(String status);
+    List<Course> findAllByStatus(String published);
+    Optional<Course> findByEnrollmentsId(Long enrollmentsId);
+
+    List<Course> findByInstructor_Id(Long instructorId);
 }

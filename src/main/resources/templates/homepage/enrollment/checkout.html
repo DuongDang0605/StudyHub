@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Learning Enrollment - StudyHub</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container-fluid position-relative d-flex p-0">
+    <div th:replace="~{fragments/sidebar-admin :: sidebar}"></div>
+
+    <div class="content">
+        <div th:replace="~{fragments/header :: header}"></div>
+
+        <div class="container-fluid pt-4 px-4">
+            <div class="row g-4 justify-content-center">
+                <div class="col-sm-12 col-xl-10">
+                    <div class="bg-secondary rounded h-100 p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <h3 class="mb-0 text-white">
+                                <i class="fa fa-graduation-cap me-3"></i>Learning Enrollment
+                            </h3>
+                            <a th:href="@{/enroll/my-list}" class="btn btn-outline-primary btn-sm">Quay lại</a>
+                        </div>
+
+                        <form th:action="@{/enroll/submit}" method="post" id="enrollmentForm">
+                            <input type="hidden" name="courseId" th:value="${courseId}">
+                            <input type="hidden" name="enrollmentId" id="enrollmentId" th:value="${enrollmentId}">
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-white-50">Khóa học</label>
+                                    <input type="text" class="form-control bg-dark text-white border-0 shadow-sm"
+                                           th:value="${courseTitle}" readonly>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-white-50">Học phí ($)</label>
+                                    <input type="text" class="form-control bg-dark text-white border-0 shadow-sm"
+                                           th:value="${fee}" readonly>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Họ và tên*</label>
+                                    <input type="text" name="fullName" class="form-control bg-dark text-white border-0"
+                                           th:value="${fullName}" readonly>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email*</label>
+                                    <input type="text" name="email" class="form-control bg-dark text-white border-0"
+                                           th:value="${email}" readonly>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Số điện thoại*</label>
+                                    <input type="tel" name="mobile" id="mobileInput" class="form-control bg-dark text-white border-0"
+                                           th:value="${mobile}" placeholder="Ví dụ: 0987654321" required>
+                                    <div id="phoneError" class="text-danger mt-1" style="display: none; font-size: 0.85rem;"></div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label d-block text-white">Phương thức thanh toán</label>
+                                    <div class="d-flex mt-2">
+                                        <div class="form-check me-4">
+                                            <input class="form-check-input" type="radio" name="paymentMethod" id="bankTransfer"
+                                                   value="BANK_TRANSFER" checked>
+                                            <label class="form-check-label text-white" for="bankTransfer">Chuyển khoản (PayOS)</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="paymentMethod"
+                                                   id="internetBanking" value="INTERNET_BANKING">
+                                            <label class="form-check-label text-white" for="internetBanking">VnPay</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 mb-4">
+                                    <label for="note" class="form-label">Ghi chú đăng ký</label>
+                                    <textarea class="form-control bg-dark text-white border-0" id="note" name="enrollNote"
+                                              rows="4" placeholder="Nhắn nhủ tới giảng viên..." th:text="${enrollNote}"></textarea>
+                                </div>
+
+                                <div class="col-12 text-end">
+                                    <button type="submit" id="btnSubmit" class="btn btn-primary px-5 py-2 w-100">
+                                        <i class="fa fa-paper-plane me-2"></i>
+                                        <span th:text="${enrollmentId != null && enrollmentId > 0} ? 'Thanh toán ngay' : 'Xác nhận đăng ký'"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/footer :: footer}"></div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+    $(document).ready(function() {
+        $('#enrollmentForm').on('submit', function(e) {
+            // 1. Khai báo biến
+            const enrollmentId = $('#enrollmentId').val();
+            const isBankTransfer = $('#bankTransfer').is(':checked');
+            const phoneInput = $('#mobileInput');
+            const phoneError = $('#phoneError');
+            const phoneValue = phoneInput.val().trim();
+
+            // 2. Định dạng số điện thoại Việt Nam
+            const phoneRegex = /^(03|05|07|08|09|02[0-9])[0-9]{8}$/;
+
+            // Reset thông báo lỗi
+            phoneError.hide().text("");
+            phoneInput.removeClass("is-invalid");
+
+            // 3. BƯỚC QUAN TRỌNG NHẤT: Kiểm tra Validate trước
+            let hasError = false;
+
+            if (phoneValue === "") {
+                phoneError.text("Số điện thoại không được để trống!").show();
+                hasError = true;
+            } else if (!phoneRegex.test(phoneValue)) {
+                phoneError.text("Số điện thoại không hợp lệ (10 chữ số, VD: 0912345678)!").show();
+                hasError = true;
+            }
+
+            // Nếu sai số điện thoại -> Dừng luôn, không cho nhảy trang
+            if (hasError) {
+                phoneInput.addClass("is-invalid");
+                e.preventDefault();
+                return false;
+            }
+
+            // 4. Nếu SĐT đã đúng -> Kiểm tra xem có phải nhảy sang thanh toán không
+            if (enrollmentId && enrollmentId > 0 && isBankTransfer) {
+                e.preventDefault(); // Chặn submit form thông thường
+                console.log("Validate OK. Đang chuyển hướng thanh toán...");
+                window.location.href = '/api/payment/pay/' + enrollmentId;
+                return false;
+            }
+
+            // Nếu không thuộc diện thanh toán lại, form tự submit về /enroll/submit
+        });
+
+        // Xóa lỗi khi người dùng sửa SĐT
+        $('#mobileInput').on('input', function() {
+            $('#phoneError').hide();
+            $(this).removeClass("is-invalid");
+        });
+    });
+</script>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
