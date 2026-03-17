@@ -60,8 +60,12 @@ public class HomeController {
             model.addAttribute("pageSize", size);
 
         } else {
+            Page<?> coursePage = courseService.findPublicCoursesPaged(keyword, null, page, size);
             model.addAttribute("keyword", keyword);
-            model.addAttribute("publicCourses", courseService.findPublicCourses(keyword, null));
+            model.addAttribute("publicCourses", coursePage.getContent());
+            model.addAttribute("courseCurrentPage", page);
+            model.addAttribute("courseTotalPages", coursePage.getTotalPages());
+            model.addAttribute("coursePageSize", size);
         }
         return "index";
     }
