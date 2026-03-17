@@ -55,7 +55,7 @@
           <form th:action="@{/auth/login}" method="post" th:if="${unverifiedError == null}">
 
             <div class="form-floating mb-3">
-              <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+              <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" th:value="${email}" required>
               <label for="email">Email address*</label>
             </div>
 

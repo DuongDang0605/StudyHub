@@ -27,7 +27,6 @@ public class AuthController {
             model.addAttribute("error", interceptedError);
             session.removeAttribute("interceptedError");
         }
-
         return "auth/login";
     }
 
@@ -40,17 +39,20 @@ public class AuthController {
 
         if (user == null) {
             model.addAttribute("error", "Sai email hoặc mật khẩu.");
+            model.addAttribute("email", email); // <-- GIỮ LẠI EMAIL
             return "auth/login";
         }
 
         if ("INACTIVE".equals(user.getStatus())) {
             model.addAttribute("error", "Tài khoản của bạn đã bị vô hiệu hóa.");
+            model.addAttribute("email", email); // <-- GIỮ LẠI EMAIL
             return "auth/login";
         }
 
         if ("UNVERIFIED".equals(user.getStatus())) {
             model.addAttribute("unverifiedError", "Tài khoản của bạn chưa được xác thực.");
             model.addAttribute("unverifiedEmail", user.getEmail());
+            model.addAttribute("email", email); // <-- GIỮ LẠI EMAIL
             return "auth/login";
         }
 

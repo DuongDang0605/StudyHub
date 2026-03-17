@@ -46,7 +46,6 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         Page<User> userPage = userRepository.searchUsers(normalizedStatus, roleId, normalizedKeyword, pageable);
-        var s = userPage.getSize();
         return userPage.map(userMapper::toDTO);
     }
 
@@ -72,8 +71,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
-        if (userDTO.getFullName() == null || userDTO.getFullName().trim().length() < 2) {
-            throw new IllegalArgumentException("Full name must be at least 2 characters long.");
+        if (userDTO.getFullName() == null || userDTO.getFullName().trim().length() < 2 || userDTO.getFullName().trim().length() > 20 ) {
+            throw new IllegalArgumentException("Full name must be 3-20 characters long.");
         }
 
         if (userDTO.getUsername() == null || !userDTO.getUsername().matches("^[a-zA-Z0-9_]{3,20}$")) {
@@ -120,8 +119,8 @@ public class UserServiceImpl implements UserService {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
 
-        if (userDTO.getFullName() == null || userDTO.getFullName().trim().length() < 2) {
-            throw new IllegalArgumentException("Full name must be at least 2 characters long.");
+        if (userDTO.getFullName() == null || userDTO.getFullName().trim().length() < 2 || userDTO.getFullName().trim().length() > 20 ) {
+            throw new IllegalArgumentException("Full name must be 3-20 characters long.");
         }
 
         if (userDTO.getUsername() == null || !userDTO.getUsername().matches("^[a-zA-Z0-9_]{3,20}$")) {
@@ -215,10 +214,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmailVerifyToken(token).orElse(null);
         if (user == null) return false;
 
-        if (user.getEmailVerifyExpiredAt() == null || user.getEmailVerifyExpiredAt().isBefore(LocalDateTime.now())) {
-            return false;
-        }
-        return true;
+        return user.getEmailVerifyExpiredAt() != null && !user.getEmailVerifyExpiredAt().isBefore(LocalDateTime.now());
     }
 
     @Override
