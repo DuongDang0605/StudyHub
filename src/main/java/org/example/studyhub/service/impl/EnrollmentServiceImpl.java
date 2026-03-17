@@ -60,27 +60,19 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Transactional
     public void updateEnrollment(Long id, EnrollmentDTO dto) {
         Enrollment enrollment = enrollmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy dữ liệu đăng ký"));
-        if(dto.getEmail() != null) {
-            userRepository.findByEmail(dto.getEmail()).orElseThrow(()-> new RuntimeException("Email ko tồn tại"));
-            enrollment.setEmail(dto.getEmail());
-        }
-        BeanUtils.copyProperties(dto, enrollment, "id", "enrolledAt", "course", "user");
-        if (dto.getCourseId() != null) {
-            Course course = courseRepository.findById(dto.getCourseId())
-                    .orElseThrow(() -> new RuntimeException("Khóa học không tồn tại"));
-            enrollment.setCourse(course);
-        }
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn đăng ký"));
 
-        if (dto.getUserId() != null) {
-            User user = userRepository.findById(dto.getUserId())
-                    .orElseThrow(() -> new RuntimeException("Người dùng sở hữu không tồn tại"));
-            enrollment.setUser(user);
-        }
+        User user = checkUserValid(dto.getEmail(), dto.getFullName());
+
+        BeanUtils.copyProperties(dto, enrollment, "id", "updateAt", "enrolledAt");
+
+        enrollment.setUser(user);
+        enrollment.setCourse(courseRepository.findById(dto.getCourseId())
+                .orElseThrow(() -> new RuntimeException("Khóa học không tồn tại")));
+
         enrollment.setUpdatedAt(LocalDateTime.now());
         enrollmentRepository.save(enrollment);
     }
-
     @Override
     @Transactional
     public void softDelete(Long id) {
@@ -97,24 +89,26 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn đăng ký với ID: " + id));
         EnrollmentDTO dto = new EnrollmentDTO();
         BeanUtils.copyProperties(enrollment, dto);
+
+        if (enrollment.getCourse() != null) {
+            dto.setCourseId(enrollment.getCourse().getId());
+        }
         return dto;
     }
 
     @Override
     @Transactional
     public void createEnrollment(EnrollmentDTO dto) {
-        Enrollment enrollment = new Enrollment();
-        if(dto.getEmail() != null) {
-            userRepository.findByEmail(dto.getEmail()).orElseThrow(()-> new RuntimeException("Email ko tồn tại"));
-            enrollment.setEmail(dto.getEmail());
-        }
-        BeanUtils.copyProperties(dto, enrollment, "id");
+        User user = checkUserValid(dto.getEmail(), dto.getFullName());
 
-        if (dto.getCourseId() != null) {
-            Course course = courseRepository.findById(dto.getCourseId())
-                    .orElseThrow(() -> new RuntimeException("Course not found"));
-            enrollment.setCourse(course);
-        }
+        Enrollment enrollment = new Enrollment();
+        // Bỏ qua id, createdAt, enrolledAt để gán thủ công
+        BeanUtils.copyProperties(dto, enrollment, "id", "updateAt", "enrolledAt");
+
+        enrollment.setUser(user);
+        enrollment.setCourse(courseRepository.findById(dto.getCourseId())
+                .orElseThrow(() -> new RuntimeException("Khóa học không tồn tại")));
+
         enrollment.setEnrolledAt(LocalDateTime.now());
         enrollment.setUpdatedAt(LocalDateTime.now());
 
@@ -238,6 +232,15 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
     }
 
+    private User checkUserValid(String email, String fullName) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Lỗi: Email '" + email + "' chưa có tài khoản!"));
+
+        if (!user.getFullName().equalsIgnoreCase(fullName)) {
+            throw new RuntimeException("Lỗi: Họ tên '" + fullName + "' không khớp với email này!");
+        }
+        return user;
+    }
     private String getCellValue(Cell cell) {
         if (cell == null) return "";
         switch (cell.getCellType()) {

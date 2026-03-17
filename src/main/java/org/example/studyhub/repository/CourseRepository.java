@@ -50,6 +50,7 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
                                         @Param("categoryId") Long categoryId,
                                         Pageable pageable);
     List<Course> findAllByStatus(String status);
+    List<Course> findAllByStatus(String published);
     Optional<Course> findByEnrollmentsId(Long enrollmentsId);
 
     List<Course> findByInstructor_Id(Long instructorId);

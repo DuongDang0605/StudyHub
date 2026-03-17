@@ -66,7 +66,7 @@ public class EnrollmentAdminController {
         Page<Enrollment> enrollmentPage = enrollmentService.getListEnrollmentPage(
                 courseId, status, keyword, page, 10, currentUser.getId(), isAdmin);
 
-        model.addAttribute("enrollmentPage", enrollmentPage); 
+        model.addAttribute("enrollmentPage", enrollmentPage);
         model.addAttribute("enrollments", enrollmentPage.getContent());
         model.addAttribute("isAdmin", isAdmin);
 
@@ -80,37 +80,45 @@ public class EnrollmentAdminController {
     }
 
     @GetMapping("/edit/{id}")
-
-    public String showEditForm(@PathVariable Long id, Model model) {
-
+    public String showEditForm(@PathVariable Long id, Model model, HttpSession session) {
+        User currentUser = (User) session.getAttribute("loggedInUser");
+        if (currentUser == null) return "redirect:/auth/login";
         EnrollmentDTO enrollmentDTO = enrollmentService.getEnrollmentById(id);
-
-        model.addAttribute("activeCourses", courseService.getActiveCoursesByStatus());
-
         model.addAttribute("enrollmentDTO", enrollmentDTO);
 
-        return "admin/enrollment/enrollment-form";
+        boolean isAdmin = currentUser.getUserRoles().stream()
+                .anyMatch(ur -> ur.getRole().getName().equalsIgnoreCase("Admin"));
 
+        List<Course> courses;
+        if (isAdmin) {
+            courses = courseService.getAllCourses();
+        } else {
+            courses = courseService.getCoursesByInstructor(currentUser.getId());
+        }
+
+        model.addAttribute("activeCourses", courses);
+
+        return "admin/enrollment/enrollment-form";
     }
 
-
     @PostMapping("/edit/{id}")
-    public String update(@PathVariable Long id,
-                         @Valid @ModelAttribute("enrollmentDTO") EnrollmentDTO dto,
-                         BindingResult result,
-                         Model model,
-                         RedirectAttributes ra) {
+    public String update(@PathVariable Long id, @Valid @ModelAttribute("enrollmentDTO") EnrollmentDTO dto,
+                         BindingResult result, Model model, HttpSession session, RedirectAttributes ra) {
+        User currentUser = (User) session.getAttribute("loggedInUser");
+        boolean isAdmin = currentUser.getUserRoles().stream()
+                .anyMatch(ur -> ur.getRole().getName().equalsIgnoreCase("Admin"));
+
         if (result.hasErrors()) {
-            model.addAttribute("activeCourses", courseService.getActiveCoursesByStatus());
+            model.addAttribute("activeCourses", isAdmin ? courseService.getAllCourses() : courseService.getCoursesByInstructor(currentUser.getId()));
             return "admin/enrollment/enrollment-form";
         }
         try {
             enrollmentService.updateEnrollment(id, dto);
             ra.addFlashAttribute("message", "Cập nhật thành công!");
             return "redirect:/admin/enrollments";
-        } catch (Exception e) {
-            model.addAttribute("error", "Lỗi: " + e.getMessage());
-            model.addAttribute("activeCourses", courseService.getActiveCoursesByStatus());
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("activeCourses", isAdmin ? courseService.getAllCourses() : courseService.getCoursesByInstructor(currentUser.getId()));
             return "admin/enrollment/enrollment-form";
         }
     }
@@ -141,9 +149,7 @@ public class EnrollmentAdminController {
 
     @PostMapping("/add")
     public String create(@Valid @ModelAttribute("enrollmentDTO") EnrollmentDTO dto,
-                         BindingResult result,
-                         Model model,
-                         RedirectAttributes ra) {
+                         BindingResult result, Model model, RedirectAttributes ra) {
         if (result.hasErrors()) {
             model.addAttribute("activeCourses", courseService.getActiveCoursesByStatus());
             return "admin/enrollment/enrollment-form";
@@ -152,12 +158,9 @@ public class EnrollmentAdminController {
             enrollmentService.createEnrollment(dto);
             ra.addFlashAttribute("message", "Thêm mới thành công!");
             return "redirect:/admin/enrollments";
-        } catch (Exception e) {
-
-            model.addAttribute("error", "Lỗi: " + e.getMessage());
-
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage()); // Truyền thông điệp lỗi sang HTML
             model.addAttribute("activeCourses", courseService.getActiveCoursesByStatus());
-
             return "admin/enrollment/enrollment-form";
         }
     }
@@ -190,38 +193,33 @@ public class EnrollmentAdminController {
                 .anyMatch(ur -> ur.getRole().getName().equalsIgnoreCase("Admin"));
 
         List<Course> coursesList;
-
         if (isAdmin) {
-            List<User> managers = userService.getUsersByRole("Manager");
-            model.addAttribute("admins", managers);
-            model.addAttribute("isOnlyOneManager", false);
-
             coursesList = courseService.getAllCourses();
         } else {
-            model.addAttribute("fixedManager", currentUser);
-            model.addAttribute("admins", List.of(currentUser));
-            model.addAttribute("isOnlyOneManager", true);
-
             coursesList = courseService.getCoursesByInstructor(currentUser.getId());
         }
 
         model.addAttribute("courses", coursesList);
-
+        // Đã xóa phần lấy danh sách managers/admins
         return "admin/enrollment/enrollment-import";
     }
 
     @PostMapping("/import")
     public String handleImportExcel(@RequestParam("file") MultipartFile file,
                                     @RequestParam("courseId") Long courseId,
-                                    @RequestParam("adminId") Long adminId,
+                                    HttpSession session, // Thêm HttpSession để lấy user hiện tại
                                     RedirectAttributes ra) {
+        User currentUser = (User) session.getAttribute("loggedInUser");
+        if (currentUser == null) return "redirect:/auth/login";
+
         if (file.isEmpty()) {
             ra.addFlashAttribute("error", "Vui lòng chọn một file Excel để import!");
             return "redirect:/admin/enrollments/import-page";
         }
 
         try {
-            enrollmentService.importEnrollments(file, courseId, adminId);
+            // Sử dụng currentUser.getId() thay cho adminId từ request
+            enrollmentService.importEnrollments(file, courseId, currentUser.getId());
             ra.addFlashAttribute("message", "Import danh sách đăng ký thành công!");
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Lỗi khi import: " + e.getMessage());
