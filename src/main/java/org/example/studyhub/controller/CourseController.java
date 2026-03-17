@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/courses")
+
 public class CourseController {
     @Autowired
     private CourseService courseService;
@@ -27,4 +28,5 @@ public class CourseController {
         model.addAttribute("categoryId", categoryId);
         return "/homepage/course/course-list";
     }
+
 }
