@@ -25,6 +25,6 @@ public class CourseController {
         model.addAttribute("categories", settingRepository.findByTypeIdAndStatus(2L, "ACTIVE"));
         model.addAttribute("keyword", keyword);
         model.addAttribute("categoryId", categoryId);
-        return "homepage/course/courses-list";
+        return "/homepage/course/course-list";
     }
 }
