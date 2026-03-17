@@ -60,6 +60,6 @@ public class HomeController {
         if (settingStatus != null && !settingStatus.isBlank()) redirectAttributes.addAttribute("settingStatus", settingStatus);
         if (settingKeyword != null && !settingKeyword.isBlank()) redirectAttributes.addAttribute("settingKeyword", settingKeyword);
 
-        return "redirect:/home";
+        return "redirect:/setting";
     }
 }
