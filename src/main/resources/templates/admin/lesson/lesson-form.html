@@ -1,153 +1,134 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lesson Details - StudyHub</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
-  <link href="/static/css/main.css" rel="stylesheet"/>
-  
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title th:text="${lesson.id == null ? 'Add Lesson' : 'Edit Lesson'} + ' - StudyHub'"></title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet"/>
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+  <link th:href="@{/css/style.css}" rel="stylesheet"/>
 </head>
 <body>
-<div class="app-wrapper">
+<div class="container-fluid position-relative d-flex p-0">
 
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-icon">S</div>
-      <span class="logo-text">StudyHub</span>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-label">Overview</div>
-      <a class="nav-item" href="/admin/dashboard"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
-      <div class="nav-label">System</div>
-      <a class="nav-item" href="/admin/settings"><i class="bi bi-sliders"></i> Settings</a>
-      <a class="nav-item" href="/admin/users"><i class="bi bi-people-fill"></i> User Accounts</a>
-      <div class="nav-label">Training</div>
-      <a class="nav-item active" href="/admin/courses"><i class="bi bi-play-circle-fill"></i> Courses</a>
-      <a class="nav-item" href="/admin/enrollments"><i class="bi bi-journal-check"></i> Enrollments <span class="nav-badge badge bg-warning text-dark ms-auto">5</span></a>
-      <div class="nav-label">Blog</div>
-      <a class="nav-item" href="/admin/posts"><i class="bi bi-file-earmark-richtext-fill"></i> Posts</a>
-      <a class="nav-item" href="/admin/comments"><i class="bi bi-chat-dots-fill"></i> Comments</a>
-    </nav>
-    <div class="sidebar-bottom">
-      <div class="dropdown">
-        <div class="user-card" data-bs-toggle="dropdown">
-          <div class="avatar-circle">A</div>
-          <div style="flex:1;min-width:0"><div class="user-name">Administrator</div><div class="user-role">Admin</div></div>
-          <i class="bi bi-three-dots-vertical text-muted" style="font-size:.75rem"></i>
+  <div th:replace="~{fragments/sidebar-admin :: sidebar}"></div>
+
+  <div class="content">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div class="container-fluid pt-4 px-4">
+      <div class="bg-light rounded p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="mb-0 text-dark">
+            <span th:text="${lesson.id == null ? 'Add New Lesson' : 'Edit Lesson'}"></span>
+            <small class="text-muted fs-6" th:text="' - Chapter: ' + ${chapter.title}"></small>
+          </h4>
+          <a th:href="@{'/admin/courses/' + ${courseId} + '/content'}" class="btn btn-outline-secondary btn-sm">
+            <i class="fa fa-arrow-left me-1"></i>Back to Course
+          </a>
         </div>
-        <ul class="dropdown-menu shadow border-0" style="border-radius:12px;min-width:170px">
-          <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2"></i>Profile</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Log Out</a></li>
-        </ul>
-      </div>
-    </div>
-  </aside>
 
-  <div class="main-content">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <form th:action="@{'/admin/courses/' + ${courseId} + '/chapters/' + ${chapter.id} + '/lessons/save'}"
+                  th:object="${lesson}" method="post">
 
-  <header class="topbar">
-    <button class="topbar-btn" id="sidebarToggle" style="display:flex"><i class="bi bi-list fs-5"></i></button>
-    <div style="flex:1">
-      <div class="topbar-title">Lesson Details</div>
-      <nav><ol class="breadcrumb mb-0" style="font-size:.72rem">
-        <li class="breadcrumb-item"><a href="/admin/dashboard" class="text-muted"><i class="bi bi-house-fill"></i></a></li>
-        <li class="breadcrumb-item"><a href="/admin/courses" class="text-muted">Courses</a></li><li class="breadcrumb-item"><a href="/admin/courses/2/content" class="text-muted">Content</a></li><li class="breadcrumb-item active text-muted">Lesson</li>
-      </ol></nav>
-    </div>
-    <div class="dropdown">
-      <button class="topbar-btn" data-bs-toggle="dropdown"><i class="bi bi-bell-fill"></i><span class="notif-dot"></span></button>
-      <div class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="width:270px;border-radius:14px">
-        <div class="px-2 pb-2 border-bottom mb-1"><strong style="font-size:.82rem">Notifications</strong></div>
-        <a class="dropdown-item rounded-3 py-2" href="#"><span style="font-size:.8rem">5 enrollments pending</span></a>
-      </div>
-    </div>
-    <div class="dropdown">
-      <div class="avatar-circle" data-bs-toggle="dropdown" style="cursor:pointer;border:2px solid var(--primary-light)">A</div>
-      <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius:12px;min-width:170px;margin-top:6px">
-        <li class="px-3 py-2 border-bottom"><div style="font-weight:700;font-size:.82rem">Administrator</div></li>
-        <li><a class="dropdown-item mt-1" href="/profile"><i class="bi bi-person me-2"></i>Profile</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Log Out</a></li>
-      </ul>
-    </div>
-  </header>
-    <main class="page-body">
+              <input type="hidden" th:field="*{id}" />
 
-      <div class="row justify-content-center">
-        <div class="col-12 col-lg-8">
-          <div class="card-sh">
-            <div class="card-header-sh">
-              <h6 class="card-title-sh"><i class="bi bi-play-fill me-2 text-primary"></i>Edit Lesson – Chương 2.1 – Tổng quan</h6>
-              <a href="/admin/courses/2/content" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Course</a>
-            </div>
-            <div class="card-body-sh">
-              <div class="row g-3">
-                <div class="col-md-8"><label class="form-label">Lesson Title *</label>
-                  <input type="text" class="form-control" value="Bài học tổng quan 2.1.1"/></div>
-                <div class="col-md-4"><label class="form-label">Duration (Minutes)</label>
-                  <input type="number" class="form-control" value="0"/></div>
-                <div class="col-md-6"><label class="form-label">Content Type *</label>
-                  <select class="form-select" id="contentTypeSelect" onchange="toggleContentField()">
-                    <option value="VIDEO" selected>Video</option>
-                    <option value="PDF">PDF</option>
-                    <option value="TEXT">Text</option>
-                  </select>
-                </div>
-                <div class="col-md-6"><label class="form-label">Order *</label>
-                  <input type="number" class="form-control" value="1"/>
-                  <div class="form-text">Order in which lesson appears in the chapter</div>
-                </div>
-                <div class="col-12" id="videoField">
-                  <label class="form-label">Content URL (Video)</label>
-                  <input type="url" class="form-control" value="https://www.youtube.com/watch?v=TzT5NI5V_LA" placeholder="YouTube URL or direct video file URL"/>
-                </div>
-                <div class="col-12" id="pdfField" style="display:none">
-                  <label class="form-label">PDF File URL</label>
-                  <input type="url" class="form-control" placeholder="Direct PDF file URL"/>
-                </div>
-                <div class="col-12" id="textField" style="display:none">
-                  <label class="form-label">Rich Text Content</label>
-                  <textarea class="form-control" rows="8" placeholder="Enter lesson content..."></textarea>
-                </div>
-                <div class="col-12">
-                  <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="previewToggle"/>
-                    <label class="form-check-label" for="previewToggle">Preview Lesson
-                      <span class="text-muted" style="font-size:.8rem">— Preview lessons can be watched without enrollment</span>
-                    </label>
+              <div class="row">
+                <div class="col-md-7 border-end pe-md-4">
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Lesson Title <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" th:field="*{title}" placeholder="Enter lesson title" required />
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Content Type <span class="text-danger">*</span></label>
+                    <select class="form-select" th:field="*{contentType}" id="contentTypeSelect">
+                      <option value="VIDEO">Video (YouTube/URL)</option>
+                      <option value="PDF">PDF Document</option>
+                      <option value="TEXT">Text / Article</option>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Content Video / URL</label>
+                    <input type="text" class="form-control" th:field="*{contentUrl}" placeholder="https://www.youtube.com/watch?v=..." />
+                    <div class="form-text">Support YouTube, Vimeo or direct media links.</div>
+                  </div>
+
+                  <div class="mb-3" id="text-content-area" th:style="${lesson.contentType == 'TEXT' ? '' : 'display:none'}">
+                    <label class="form-label fw-bold">Rich Text Content</label>
+                    <textarea class="form-control" th:field="*{contentText}" rows="5" placeholder="Enter lesson text content..."></textarea>
                   </div>
                 </div>
+
+                <div class="col-md-5 ps-md-4 mt-4 mt-md-0">
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Duration (Minutes)</label>
+                    <div class="input-group">
+                      <input type="number" class="form-control" th:field="*{durationMinutes}" min="0" />
+                      <span class="input-group-text">min</span>
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Order Number <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" th:field="*{orderNum}" min="1" required />
+                    <div class="form-text">Position of lesson in this chapter.</div>
+                  </div>
+
+                  <div class="mb-4">
+                    <label class="form-label fw-bold d-block">Preview Setting</label>
+                    <div class="form-check form-switch p-2 border rounded bg-white ps-5">
+                      <input class="form-check-input" type="checkbox" id="isPreview" th:field="*{isPreview}">
+                      <label class="form-check-label fw-bold text-primary" for="isPreview">Free Preview</label>
+                    </div>
+                    <small class="text-muted">If ON, students can view this lesson without buying the course.</small>
+                  </div>
+
+<!--                  <div class="mb-3">-->
+<!--                    <label class="form-label fw-bold">Status</label>-->
+<!--                    <select class="form-select" th:field="*{status}">-->
+<!--                      <option value="ACTIVE">Active</option>-->
+<!--                      <option value="INACTIVE">Inactive</option>-->
+<!--                    </select>-->
+<!--                  </div>-->
+                </div>
               </div>
-              <div class="d-flex gap-2 mt-4 pt-3 border-top">
-                <button class="btn btn-primary"><i class="bi bi-floppy-fill me-1"></i>Update Lesson</button>
-                <a href="/admin/courses/2/content" class="btn btn-outline-secondary"><i class="bi bi-x-lg me-1"></i>Cancel</a>
+
+              <div class="mt-4 pt-3 border-top d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-4">
+                  <i class="fa fa-save me-2"></i> Save Lesson
+                </button>
+                <a th:href="@{'/admin/courses/' + ${courseId} + '/content'}" class="btn btn-light border">Cancel</a>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
+    </div>
 
-    </main>
-
-  <footer class="app-footer">
-    <span>StudyHub v1 &copy; 2026</span>
-    <span>Contact: <a href="mailto:contact@studyhub.com" style="color:var(--primary)">contact@studyhub.com</a></span>
-  </footer>
+    <div th:replace="~{fragments/footer :: footer}"></div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/static/js/app.js"></script>
+
 <script>
-function toggleContentField(){
-  const v=document.getElementById('contentTypeSelect').value;
-  document.getElementById('videoField').style.display=v==='VIDEO'?'':'none';
-  document.getElementById('pdfField').style.display=v==='PDF'?'':'none';
-  document.getElementById('textField').style.display=v==='TEXT'?'':'none';
-}
+  document.getElementById('contentTypeSelect').addEventListener('change', function() {
+    const textArea = document.getElementById('text-content-area');
+    if (this.value === 'TEXT') {
+      textArea.style.display = 'block';
+    } else {
+      textArea.style.display = 'none';
+    }
+  });
 </script>
+
+<script th:src="@{/js/main.js}"></script>
 </body>
 </html>

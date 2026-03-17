@@ -15,9 +15,10 @@ public class ChapterServiceImpl implements ChapterService {
 
     private final ChapterRepository chapterRepository;
 
-    @Override
-    public List<Chapter> getChaptersByCourse(Long courseId) {
-        return chapterRepository.findByCourseIdOrderByOrderNum(courseId);
+
+    public List<Chapter> getChaptersByCourseId(Long courseId) {
+        // Gọi hàm repository đã viết ở bước 1
+        return chapterRepository.findByCourseIdWithLessons(courseId);
     }
 
     @Override
@@ -41,5 +42,10 @@ public class ChapterServiceImpl implements ChapterService {
     @Override
     public void deleteChapter(Long id) {
         chapterRepository.deleteById(id);
+    }
+    @Override
+    public Chapter getChapterById(Long id) {
+        return chapterRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chapter not found"));
     }
 }

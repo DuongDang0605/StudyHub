@@ -93,24 +93,25 @@ public class AdminCourseController {
     public String viewCourseDetail(@PathVariable Long id, Model model) {
         CourseDTO course = courseService.getCourseById(id)
                 .orElseThrow(() -> new RuntimeException("Course not found"));
-
+        List<Chapter> chapters = chapterService.getChaptersByCourseId(id);
         model.addAttribute("course", course);
+        model.addAttribute("chapters", chapters);
         return "admin/course/course-detail";
     }
 
-    @GetMapping("/{id}/content")
-    public String courseContent(@PathVariable Long id, Model model) {
-
-        CourseDTO course = courseService.getCourseById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
-
-        List<Chapter> chapters = chapterService.getChaptersByCourse(id);
-
-        model.addAttribute("course", course);
-        model.addAttribute("chapters", chapters);
-
-        return "admin/course/course-content";
-    }
+//    @GetMapping("/{id}/content")
+//    public String courseContent(@PathVariable Long id, Model model) {
+//
+//        CourseDTO course = courseService.getCourseById(id)
+//                .orElseThrow(() -> new RuntimeException("Course not found"));
+//
+//        List<Chapter> chapters = chapterService.getChaptersByCourse(id);
+//
+//        model.addAttribute("course", course);
+//        model.addAttribute("chapters", chapters);
+//
+//        return "admin/course/course-content";
+//    }
 
     @GetMapping("/{id}/edit")
 
