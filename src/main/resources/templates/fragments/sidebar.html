@@ -42,13 +42,28 @@
     </div>
 
     <div class="navbar-nav w-100">
-      <a href="@{/courses}" class="nav-item nav-link"><i class="fa fa-book me-2"></i>Courses</a>
-      <a href="#" class="nav-item nav-link"><i class="fa fa-pen-nib me-2"></i>Blogs</a>
-
-      <a href="#" class="nav-item nav-link"
-         th:if="${session.roleNames != null and #lists.contains(session.roleNames, 'Marketing')}">
-        <i class="fa fa-file-alt me-2"></i>Post List
+      <a th:href="@{/courses}" class="nav-item nav-link">
+        <i class="fa fa-book me-2"></i>Courses
       </a>
+      <a href="#" class="nav-item nav-link">
+        <i class="fa fa-pen-nib me-2"></i>Blogs
+      </a>
+
+      <a class="nav-item nav-link d-flex justify-content-between align-items-center"
+         data-bs-toggle="collapse"
+         href="#settingSubmenuHome"
+         role="button"
+         aria-expanded="false"
+         aria-controls="settingSubmenuHome"
+         th:if="${session.roleNames != null and #lists.contains(session.roleNames, 'Admin')}">
+        <span><i class="fa fa-cog me-2"></i>System Settings</span>
+        <i class="fa fa-chevron-down small"></i>
+      </a>
+      <div class="collapse" id="settingSubmenuHome"
+           th:if="${session.roleNames != null and #lists.contains(session.roleNames, 'Admin')}">
+        <a th:href="@{/home(section='settings')}" class="nav-item nav-link ps-5">Setting List</a>
+        <a th:href="@{/setting/detail}" class="nav-item nav-link ps-5">Setting Detail</a>
+      </div>
 
       <a th:href="@{${session.loggedInUser != null ? '/my-enrollments' : '/auth/login'}}"
          class="nav-item nav-link">

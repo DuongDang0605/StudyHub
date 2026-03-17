@@ -97,16 +97,23 @@
           <table class="table-sh">
             <thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Value</th><th>Priority</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody>
-              <tr><td>1</td><td style="font-weight:600">Manager</td><td>User Role</td><td>—</td><td>2</td><td><span class="badge-sh bs-active">Active</span></td>
-                <td><div class="d-flex gap-1"><a href="/admin/settings/1" class="btn btn-primary btn-icon btn-sm"><i class="bi bi-pencil-fill"></i></a><button class="btn btn-warning btn-icon btn-sm" title="Deactivate"><i class="bi bi-pause-fill"></i></button></div></td></tr>
-              <tr><td>2</td><td style="font-weight:600">Admin</td><td>User Role</td><td>—</td><td>1</td><td><span class="badge-sh bs-inactive">Inactive</span></td>
-                <td><div class="d-flex gap-1"><a href="/admin/settings/2" class="btn btn-primary btn-icon btn-sm"><i class="bi bi-pencil-fill"></i></a><button class="btn btn-success btn-icon btn-sm" title="Activate"><i class="bi bi-play-fill"></i></button></div></td></tr>
-              <tr><td>3</td><td style="font-weight:600">Teacher</td><td>User Role</td><td>—</td><td>4</td><td><span class="badge-sh bs-active">Active</span></td>
-                <td><div class="d-flex gap-1"><a href="/admin/settings/3" class="btn btn-primary btn-icon btn-sm"><i class="bi bi-pencil-fill"></i></a><button class="btn btn-warning btn-icon btn-sm"><i class="bi bi-pause-fill"></i></button></div></td></tr>
-              <tr><td>4</td><td style="font-weight:600">Programming</td><td>Course Category</td><td>—</td><td>1</td><td><span class="badge-sh bs-active">Active</span></td>
-                <td><div class="d-flex gap-1"><a href="/admin/settings/4" class="btn btn-primary btn-icon btn-sm"><i class="bi bi-pencil-fill"></i></a><button class="btn btn-warning btn-icon btn-sm"><i class="bi bi-pause-fill"></i></button></div></td></tr>
-              <tr><td>5</td><td style="font-weight:600">Beginner</td><td>Course Level</td><td>—</td><td>1</td><td><span class="badge-sh bs-active">Active</span></td>
-                <td><div class="d-flex gap-1"><a href="/admin/settings/5" class="btn btn-primary btn-icon btn-sm"><i class="bi bi-pencil-fill"></i></a><button class="btn btn-warning btn-icon btn-sm"><i class="bi bi-pause-fill"></i></button></div></td></tr>
+            <tr th:if="${#lists.isEmpty(settings)}">
+              <td colspan="7" class="text-center">No settings found</td>
+            </tr>
+
+            <tr th:each="s : ${settings}">
+              <td th:text="${s.id}"></td>
+              <td style="font-weight:600" th:text="${s.name}"></td>
+              <td th:text="${s.type != null ? s.type.name : '-'}"></td>
+              <td th:text="${s.value != null ? s.value : '-'}"></td>
+              <td th:text="${s.priority}"></td>
+              <td>
+        <span class="badge-sh"
+              th:classappend="${s.status == 'ACTIVE'} ? ' bs-active' : ' bs-inactive'"
+              th:text="${s.status}"></span>
+              </td>
+              <td>-</td>
+            </tr>
             </tbody>
           </table>
         </div>
