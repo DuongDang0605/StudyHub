@@ -45,6 +45,10 @@
       <a th:href="@{/courses}" class="nav-item nav-link">
         <i class="fa fa-book me-2"></i>Courses
       </a>
+      <a th:href="@{/my-courses}" class="nav-item nav-link"
+         th:if="${session.loggedInUser != null}">
+        <i class="fa fa-graduation-cap me-2"></i>My Courses
+      </a>
       <a href="#" class="nav-item nav-link">
         <i class="fa fa-pen-nib me-2"></i>Blogs
       </a>
