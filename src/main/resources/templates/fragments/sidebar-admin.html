@@ -29,6 +29,10 @@
                th:if="${#lists.contains(session.roleNames, 'Admin') or #lists.contains(session.roleNames, 'Manager')}">
                 <i class="fa fa-clipboard-list me-2"></i>Course Enrollments
             </a>
+            <a th:href="@{/my-courses}" class="nav-item nav-link"
+               th:if="${#lists.contains(session.roleNames, 'Admin') or #lists.contains(session.roleNames, 'Manager') or #lists.contains(session.roleNames, 'Member')}">
+                <i class="fa fa-graduation-cap me-2"></i>My Courses
+            </a>
             <a th:href="@{/users/list}" class="nav-item nav-link"
                th:if="${#lists.contains(session.roleNames, 'Admin')}">
                 <i class="fa fa-users me-2"></i>User Accounts

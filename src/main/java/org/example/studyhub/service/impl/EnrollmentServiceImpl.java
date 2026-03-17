@@ -259,4 +259,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
         return true;
     }
+    @Override
+    public Page<Enrollment> getMyApprovedCourses(Long userId, String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("enrolledAt").descending());
+        String keywordPattern = (keyword == null || keyword.isBlank())
+                ? null
+                : "%" + keyword.trim().toLowerCase() + "%";
+        String userEmail = userRepository.findById(userId).map(User::getEmail).orElse(null);
+        return enrollmentRepository.findApprovedByUserId(userId, userEmail, keywordPattern, pageable);
+    }
 }

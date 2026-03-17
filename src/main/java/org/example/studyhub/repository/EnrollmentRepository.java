@@ -35,6 +35,53 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
                                   @Param("keyword") String keyword,
                                   Pageable pageable);
 
+    @Query("""
+            SELECT e
+            FROM Enrollment e
+            WHERE e.user.id = :userId
+              OR ( :userEmail IS NOT NULL
+                   AND e.email IS NOT NULL
+                   AND LOWER(e.email) = LOWER(:userEmail) )
+            """)
+    Page<Enrollment> findByUserIdOrEmail(@Param("userId") Long userId,
+                                         @Param("userEmail") String userEmail,
+                                         Pageable pageable);
+
+    @Query("""
+            SELECT e
+            FROM Enrollment e
+            WHERE (e.user.id = :userId
+                   OR ( :userEmail IS NOT NULL
+                        AND e.email IS NOT NULL
+                        AND LOWER(TRIM(e.email)) = LOWER(TRIM(:userEmail)) ))
+              AND TRIM(UPPER(COALESCE(e.status, ''))) = 'APPROVED'
+              AND (:keywordPattern IS NULL OR LOWER(e.course.title) LIKE :keywordPattern)
+            """)
+    Page<Enrollment> findApprovedByUserId(@Param("userId") Long userId,
+                                          @Param("userEmail") String userEmail,
+                                          @Param("keywordPattern") String keywordPattern,
+                                          Pageable pageable);
+
+    @Query("""
+            SELECT e
+            FROM Enrollment e
+            WHERE TRIM(UPPER(COALESCE(e.status, ''))) = 'APPROVED'
+              AND (:keywordPattern IS NULL OR LOWER(e.course.title) LIKE :keywordPattern)
+            """)
+    Page<Enrollment> findAllApproved(@Param("keywordPattern") String keywordPattern,
+                                     Pageable pageable);
+
+    @Query("""
+            SELECT e
+            FROM Enrollment e
+            WHERE TRIM(UPPER(COALESCE(e.status, ''))) = 'APPROVED'
+              AND e.course.instructor.id = :instructorId
+              AND (:keywordPattern IS NULL OR LOWER(e.course.title) LIKE :keywordPattern)
+            """)
+    Page<Enrollment> findApprovedByInstructor(@Param("instructorId") Long instructorId,
+                                              @Param("keywordPattern") String keywordPattern,
+                                              Pageable pageable);
+
     Optional<Enrollment> findByOrderCode(Long orderCode);
 
     @Query("SELECT e FROM Enrollment e WHERE " +

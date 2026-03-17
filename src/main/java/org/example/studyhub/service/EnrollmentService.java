@@ -16,6 +16,7 @@ public interface EnrollmentService {
     EnrollmentDTO getEnrollmentById(Long id);
     void createEnrollment(EnrollmentDTO dto);
     Page<Enrollment> getMyEnrollments(Long userId, String keyword, int page, int size);
+    Page<Enrollment> getMyApprovedCourses(Long userId, String keyword, int page, int size);
 
 
     Map<String, Object> prepareCheckoutData(Long courseId, Long enrollmentId, Long userId);
