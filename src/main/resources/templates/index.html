@@ -18,20 +18,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <link th:href="@{/lib/owlcarousel/assets/owl.carousel.min.css}" rel="stylesheet">
-    <link th:href="@{/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css}" rel="stylesheet" />
+    <link th:href="@{/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css}" rel="stylesheet"/>
 
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
-
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 
 <body>
 <div class="container-fluid position-relative d-flex p-0">
-    <div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-<!--        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">-->
-<!--            <span class="sr-only">Loading...</span>-->
-<!--        </div>-->
-    </div>
+    <div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center"></div>
     <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
     <div class="content">
@@ -39,12 +34,11 @@
 
         <div class="container-fluid pt-4 px-4">
             <div class="bg-secondary rounded p-4 h-100">
-                <h4 class="mb-4">Chào mừng đến với hệ thống quản lý!</h4>
-                <p>Nội dung các bảng biểu, biểu đồ, danh sách khóa học sẽ được nhúng vào khu vực này.</p>
+                <h4 class="mb-4">Welcome to StudyHub management area!</h4>
+                <p>Dashboard tables, charts and public courses are shown below.</p>
             </div>
         </div>
 
-        <!-- COURSE SECTION -->
         <div class="container-fluid pt-4 px-4" th:if="${section != 'settings'}">
             <div class="bg-secondary rounded p-4">
                 <form class="mb-3" method="get" th:action="@{/home}">
@@ -56,10 +50,10 @@
                                type="text"
                                class="form-control"
                                name="keyword"
-                               placeholder="Tìm theo tên khóa học..."
+                               placeholder="Search course title..."
                                th:value="${keyword}"
                                autocomplete="off">
-                        <button class="btn btn-primary" type="submit">Tìm</button>
+                        <button class="btn btn-primary" type="submit">Search</button>
                     </div>
                 </form>
 
@@ -71,23 +65,36 @@
                                  th:src="${course.thumbnail != null and !#strings.isEmpty(course.thumbnail) ? course.thumbnail : '/img/user.jpg'}"
                                  alt="thumbnail">
                             <div class="card-body">
-                                <h6 class="card-title" th:text="${course.title}"></h6>
-                                <p class="text-muted mb-1" th:text="${course.instructor != null ? 'By ' + course.instructor.fullName : 'By Unknown'}"></p>
-                                <p class="card-text text-muted" th:text="${course.description != null ? course.description : 'Không có mô tả'}"></p>
-                                <form th:action="@{/enroll/create-and-checkout}" method="post">
-                                    <input type="hidden" name="courseId" th:value="${course.id}">
-                                    <button type="submit" class="btn btn-primary btn-sm w-100">
-                                        <a class="btn btn-primary btn-sm" th:href="@{/courses/{id}(id=${course.id})}">View Detail</a>
-                                    </button>
-                                </form>
+                                <h6 class="card-title text-dark fw-bold mb-1" style="font-size:1.05rem;" th:text="${course.title}"></h6>
+                                <p class="text-muted mb-1" style="font-size:0.78rem;"
+                                   th:text="${course.createdBy != null ? 'Created by: ' + course.createdBy.fullName : 'Created by: Unknown'}"></p>
+                                <p class="text-dark mb-1" style="font-size:0.9rem;"
+                                   th:text="${course.instructor != null ? 'Instructor: ' + course.instructor.fullName : 'Instructor: Unknown'}"></p>
+                                <p class="card-text text-muted mb-2"
+                                   th:text="${course.description != null and !#strings.isEmpty(course.description) ? course.description : 'No description'}"></p>
+                                <p class="text-muted mb-2"
+                                   th:text="${'Info: '
+                                        + (course.level != null ? course.level.name : 'Level N/A')
+                                        + ' | '
+                                        + (course.category != null ? course.category.name : 'Category N/A')
+                                        + (course.duration != null ? ' | ' + course.duration + ' mins' : '')}"></p>
+                                <p class="mb-3">
+                                    <span class="text-decoration-line-through text-muted me-2"
+                                          th:if="${course.salePrice != null}"
+                                          th:text="${#numbers.formatDecimal((course.listedPrice != null ? course.listedPrice : 0), 1, 'POINT', 0, 'COMMA') + ' VND'}"></span>
+                                    <span class="fw-bold text-primary"
+                                          th:text="${#numbers.formatDecimal((course.salePrice != null ? course.salePrice : (course.listedPrice != null ? course.listedPrice : 0)), 1, 'POINT', 0, 'COMMA') + ' VND'}"></span>
+                                </p>
+                                <a class="btn btn-primary btn-sm" th:href="@{/courses}">Enroll Now</a>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <p class="text-light mb-0" th:if="${publicCourses == null or #lists.isEmpty(publicCourses)}">
-                    Chưa có khóa học công khai.
+                    No public course available.
                 </p>
+
                 <nav class="mt-3" th:if="${courseTotalPages != null and courseTotalPages > 1}">
                     <ul class="pagination pagination-sm mb-0 justify-content-end">
                         <li class="page-item" th:classappend="${courseCurrentPage == 0} ? 'disabled'">
@@ -118,7 +125,6 @@
                 </nav>
             </div>
         </div>
-
 
         <div th:replace="~{fragments/footer :: footer}"></div>
     </div>
