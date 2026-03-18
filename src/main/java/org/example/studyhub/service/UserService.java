@@ -25,4 +25,6 @@ public interface UserService {
     void verifyAndSetupPassword(String token, String newPassword);
 
     List<User> getUsersByRole(String roleName);
+    // Additional methods for course management
+    List<UserDTO> getInstructors();
 }

@@ -68,4 +68,12 @@ public class CourseDTO {
     public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
     }
+    public void setPublished(Boolean published) {
+        this.status = published != null && published ? "PUBLISHED" : "UNPUBLISHED";
+    }
+
+    // Custom getter for published checkbox
+    public Boolean getPublished() {
+        return "PUBLISHED".equals(this.status);
+    }
 }

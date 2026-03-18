@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -43,7 +44,8 @@ public class Chapter {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Lesson> lessons;
+    @OrderBy("orderNum ASC")
+    private List<Lesson> lessons;
 
     @PrePersist
     protected void onCreate() {

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -23,5 +24,53 @@ public class SettingServiceImpl implements SettingService {
     public List<SettingDTO> getAllRole(){
         List<Setting> settings = settingRepository.getAllRoles();
         return settingMapper.toDTOList(settings);
+    }
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public List<SettingDTO> getSettingsByType(String type) {
+        // Convert type string to typeId based on the existing pattern
+        Long typeId = null;
+        if ("CATEGORY".equals(type)) {
+            typeId = 2L; // Based on getAllRoles() using type.id = 1 for roles
+        } else if ("LEVEL".equals(type)) {
+            typeId = 3L; // Assuming LEVEL has typeId = 3
+        }
+
+        if (typeId != null) {
+            List<Setting> settings = settingRepository.findByTypeIdAndStatus(typeId, "ACTIVE");
+            return settingMapper.toDTOList(settings);
+        }
+        return List.of();
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Optional<Setting> getSettingById(Long id) {
+        return settingRepository.findById(id);
+    }
+
+    @Override
+    public SettingDTO createSetting(SettingDTO settingDTO) {
+        Setting setting = settingMapper.toEntity(settingDTO);
+        Setting savedSetting = settingRepository.save(setting);
+        return settingMapper.toDTO(savedSetting);
+    }
+
+    @Override
+    public SettingDTO updateSetting(Long id, SettingDTO settingDTO) {
+        Setting existingSetting = settingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Setting not found with id: " + id));
+
+        settingMapper.updateEntity(existingSetting, settingDTO);
+        Setting updatedSetting = settingRepository.save(existingSetting);
+        return settingMapper.toDTO(updatedSetting);
+    }
+
+    @Override
+    public void deleteSetting(Long id) {
+        if (!settingRepository.existsById(id)) {
+            throw new RuntimeException("Setting not found with id: " + id);
+        }
+        settingRepository.deleteById(id);
     }
 }

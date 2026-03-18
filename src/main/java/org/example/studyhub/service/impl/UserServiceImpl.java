@@ -323,4 +323,13 @@ public class UserServiceImpl implements UserService {
     public List<User> getUsersByRole(String roleName) {
         return userRepository.findUsersByRoleName(roleName);
     }
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public List<UserDTO> getInstructors() {
+        // Assuming instructors are users with role "MANAGER" or similar
+        List<User> instructors = userRepository.findAllByRoleName("Manager");
+        return instructors.stream()
+                .map(userMapper::toDTO)
+                .toList();
+    }
 }
