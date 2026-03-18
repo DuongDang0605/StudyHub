@@ -27,6 +27,9 @@ public class EnrollmentController {
                                 HttpSession session) {
 
         User currentUser = (User) session.getAttribute("loggedInUser");
+        if (currentUser == null) {
+            return "redirect:/auth/login";
+        }
 
         Page<Enrollment> enrollmentPage = enrollmentService.getMyEnrollments(
                 currentUser.getId(), keyword, page, 10);
@@ -58,5 +61,19 @@ public class EnrollmentController {
         model.addAllAttributes(checkoutData);
 
         return "homepage/enrollment/checkout";
+    }
+    @PostMapping("/create-and-checkout")
+    public String createAndCheckout(@RequestParam Long courseId, HttpSession session) {
+        User currentUser = (User) session.getAttribute("loggedInUser");
+        if (currentUser == null) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            Long enrollmentId = enrollmentService.createEnrollmentAndGetId(courseId, currentUser.getId());
+            return "redirect:/enroll/pay-checkout?courseId=" + courseId + "&enrollmentId=" + enrollmentId;
+        } catch (Exception e) {
+            return "redirect:/admin/courses?error=" + e.getMessage();
+        }
     }
 }

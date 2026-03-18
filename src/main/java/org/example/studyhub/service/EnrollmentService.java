@@ -23,4 +23,6 @@ public interface EnrollmentService {
 
     ByteArrayInputStream exportEnrollmentsToExcel(Long courseId, String status, String keyword);
     void importEnrollments(MultipartFile file, Long courseId, Long adminId);
+
+    Long createEnrollmentAndGetId(Long courseId, Long userId);
 }

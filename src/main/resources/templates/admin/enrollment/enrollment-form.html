@@ -44,35 +44,32 @@
                         <div class="col-md-8">
                             <label class="form-label">Course Name *</label>
                             <select class="form-select bg-dark border-0 text-white" th:field="*{courseId}">
-                                <option value="" th:if="${enrollmentDTO.id == null}">-- Select Course --</option>
-
+                                <option value="">-- Select Course --</option>
                                 <option th:each="c : ${activeCourses}"
                                         th:value="${c.id}"
-                                        th:text="${c.title}"
-                                        th:selected="${enrollmentDTO.courseId != null and c.id == enrollmentDTO.courseId}">
-                                </option>
+                                        th:text="${c.title}"></option>
                             </select>
-                            <div class="text-danger small" th:if="${#fields.hasErrors('courseId')}" th:errors="*{courseId}"></div>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('courseId')}" th:errors="*{courseId}"></div>
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label">Fee</label>
-                            <input type="number" step="1000" class="form-control bg-dark border-0 text-white" th:field="*{fee}">
+                            <label class="form-label">Fee *</label>
+                            <input type="number" class="form-control bg-dark border-0 text-white" th:field="*{fee}">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fee')}" th:errors="*{fee}"></div>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Full Name *</label>
-                            <input type="text" class="form-control bg-dark border-0 text-white"
-                                   th:field="*{fullName}" placeholder="Nhập tên chính xác của học viên">
-                            <div class="text-danger small" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                            <input type="text" class="form-control bg-dark border-0 text-white" th:field="*{fullName}">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">Email *</label>
-                            <input type="email" class="form-control bg-dark border-0 text-white"
-                                   th:field="*{email}" placeholder="Email phải tồn tại trên hệ thống">
-                            <div class="text-danger small" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            <input type="email" class="form-control bg-dark border-0 text-white" th:field="*{email}">
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                         </div>
+
 
                         <div class="col-12">
                             <label class="form-label">Enroll Note</label>
@@ -109,7 +106,13 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Completed At</label>
-                            <input type="date" class="form-control bg-dark border-0 text-white" th:field="*{completedAt}">
+                            <input type="date" class="form-control bg-dark border-0 text-white"
+                                   th:field="*{completedAt}"
+                                   th:value="${enrollmentDTO.completedAt != null ? #temporals.format(enrollmentDTO.completedAt, 'yyyy-MM-dd') : ''}">
+
+                            <div class="text-danger small mt-1"
+                                 th:if="${#fields.hasErrors('completedAt')}"
+                                 th:errors="*{completedAt}"></div>
                         </div>
 
                         <div class="col-12 mt-4">

@@ -64,7 +64,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         User user = checkUserValid(dto.getEmail(), dto.getFullName());
 
-        BeanUtils.copyProperties(dto, enrollment, "id", "updateAt", "enrolledAt");
+        BeanUtils.copyProperties(dto, enrollment, "id", "updatedAt", "enrolledAt");
 
         enrollment.setUser(user);
         enrollment.setCourse(courseRepository.findById(dto.getCourseId())
@@ -73,6 +73,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         enrollment.setUpdatedAt(LocalDateTime.now());
         enrollmentRepository.save(enrollment);
     }
+
     @Override
     @Transactional
     public void softDelete(Long id) {
@@ -102,8 +103,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         User user = checkUserValid(dto.getEmail(), dto.getFullName());
 
         Enrollment enrollment = new Enrollment();
-        // Bỏ qua id, createdAt, enrolledAt để gán thủ công
-        BeanUtils.copyProperties(dto, enrollment, "id", "updateAt", "enrolledAt");
+        BeanUtils.copyProperties(dto, enrollment, "id", "updatedAt", "enrolledAt");
 
         enrollment.setUser(user);
         enrollment.setCourse(courseRepository.findById(dto.getCourseId())
@@ -133,12 +133,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 data.put("courseTitle", e.getCourse().getTitle());
                 data.put("fee", e.getFee());
                 data.put("fullName", e.getFullName());
-                data.put("mobile", e.getMobile());
+                data.put("mobile", user.getMobile());
                 data.put("email", e.getEmail());
             }
         }
         return data;
     }
+
     @Override
     public ByteArrayInputStream exportEnrollmentsToExcel(Long courseId, String status, String keyword) {
         List<Enrollment> enrollments = enrollmentRepository.findAllWithFilter(courseId, status, keyword);
@@ -188,7 +189,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         try (InputStream is = file.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
             Sheet sheet = workbook.getSheetAt(0);
             List<Enrollment> enrollmentsToSave = new ArrayList<>();
-
+            if(courseId == null) {
+                throw new RuntimeException("Vui lòng chọn khóa học");
+            }
             Course course = courseRepository.findById(courseId)
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy khóa học"));
             User admin = userRepository.findById(adminId)
@@ -218,7 +221,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 e.setUpdatedAt(LocalDateTime.now());
                 e.setProgress(BigDecimal.ZERO);
 
-                e.setEnrollNote("Imported by Admin: " + admin.getFullName() );
+                e.setEnrollNote("Imported by Admin: " + admin.getFullName());
 
                 enrollmentsToSave.add(e);
             }
@@ -232,7 +235,34 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
     }
 
+    @Override
+    @Transactional
+    public Long createEnrollmentAndGetId(Long courseId, Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Khóa học không tồn tại"));
+
+
+        Enrollment enrollment = new Enrollment();
+        enrollment.setUser(user);
+        enrollment.setCourse(course);
+        enrollment.setFullName(user.getFullName());
+        enrollment.setEmail(user.getEmail());
+        enrollment.setMobile(user.getMobile());
+        enrollment.setFee(course.getSalePrice() != null ? course.getSalePrice() : course.getListedPrice());
+        enrollment.setStatus("PENDING");
+        enrollment.setEnrolledAt(LocalDateTime.now());
+        enrollment.setUpdatedAt(LocalDateTime.now());
+        enrollment.setProgress(BigDecimal.ZERO);
+
+        Enrollment saved = enrollmentRepository.save(enrollment);
+        return saved.getId();
+    }
+
     private User checkUserValid(String email, String fullName) {
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Lỗi: Email '" + email + "' chưa có tài khoản!"));
 
@@ -241,13 +271,18 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
         return user;
     }
+
     private String getCellValue(Cell cell) {
         if (cell == null) return "";
         switch (cell.getCellType()) {
-            case STRING: return cell.getStringCellValue();
-            case NUMERIC: return String.valueOf((long) cell.getNumericCellValue());
-            case BOOLEAN: return String.valueOf(cell.getBooleanCellValue());
-            default: return "";
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                return String.valueOf((long) cell.getNumericCellValue());
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            default:
+                return "";
         }
     }
 
@@ -259,6 +294,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
         return true;
     }
+
     @Override
     public Page<Enrollment> getMyApprovedCourses(Long userId, String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("enrolledAt").descending());
@@ -268,4 +304,6 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         String userEmail = userRepository.findById(userId).map(User::getEmail).orElse(null);
         return enrollmentRepository.findApprovedByUserId(userId, userEmail, keywordPattern, pageable);
     }
+
+
 }

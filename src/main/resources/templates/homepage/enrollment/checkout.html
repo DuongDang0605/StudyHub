@@ -64,7 +64,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Số điện thoại*</label>
                                     <input type="tel" name="mobile" id="mobileInput" class="form-control bg-dark text-white border-0"
-                                           th:value="${mobile}" placeholder="Ví dụ: 0987654321" required>
+                                           th:value="${mobile}" placeholder="Ví dụ: 0987654321" readonly>
                                     <div id="phoneError" class="text-danger mt-1" style="display: none; font-size: 0.85rem;"></div>
                                 </div>
 
@@ -130,10 +130,7 @@
             // 3. BƯỚC QUAN TRỌNG NHẤT: Kiểm tra Validate trước
             let hasError = false;
 
-            if (phoneValue === "") {
-                phoneError.text("Số điện thoại không được để trống!").show();
-                hasError = true;
-            } else if (!phoneRegex.test(phoneValue)) {
+            if (!phoneRegex.test(phoneValue)) {
                 phoneError.text("Số điện thoại không hợp lệ (10 chữ số, VD: 0912345678)!").show();
                 hasError = true;
             }
