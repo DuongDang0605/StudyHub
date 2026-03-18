@@ -21,9 +21,10 @@
 
         <div class="container-fluid pt-4 px-4">
             <div class="bg-secondary rounded p-4">
+
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                    <h5 class="text-white mb-0">My Approved Courses</h5>
-                    <a th:href="@{/courses}" class="btn btn-outline-light btn-sm">Browse Courses</a>
+                    <h5 class="text-white mb-0" th:text="${pageTitle != null ? pageTitle : 'My Courses'}">My Courses</h5>
+                    <a th:href="@{/home(section='courses')}" class="btn btn-outline-light btn-sm">Browse Courses</a>
                 </div>
 
                 <form class="mb-4" method="get" th:action="@{/my-courses}">
@@ -34,12 +35,13 @@
                                class="form-control"
                                name="keyword"
                                th:value="${keyword}"
-                               placeholder="Search approved courses by title...">
+                               placeholder="Search courses by title...">
                         <button class="btn btn-primary" type="submit">Search</button>
                     </div>
                 </form>
 
-                <div class="row g-3" th:if="${myCourses != null and !#lists.isEmpty(myCourses)}">
+                <!-- MEMBER: Enrollment list (approved only) -->
+                <div class="row g-3" th:if="${viewMode == 'enrollment' and myCourses != null and !#lists.isEmpty(myCourses)}">
                     <div class="col-12 col-md-6 col-xl-4" th:each="e : ${myCourses}">
                         <div class="card h-100 border-0">
                             <img class="card-img-top"
@@ -67,14 +69,44 @@
                                           th:text="${(e.progress != null ? e.progress : 0) + '%'}">0%</span>
                                 </div>
 
-                                <a class="btn btn-primary btn-sm w-100" th:href="@{/courses}">Go to Course</a>
+                                <a class="btn btn-primary btn-sm w-100"
+                                   th:if="${e.course != null}"
+                                   th:href="@{/my-courses/{courseId}/lesson-view(courseId=${e.course.id})}">Go to Lesson</a>
+                                <button class="btn btn-secondary btn-sm w-100" type="button" disabled
+                                        th:if="${e.course == null}">No Lesson</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADMIN / MANAGER: Course list -->
+                <div class="row g-3" th:if="${viewMode == 'course' and myCourses != null and !#lists.isEmpty(myCourses)}">
+                    <div class="col-12 col-md-6 col-xl-4" th:each="c : ${myCourses}">
+                        <div class="card h-100 border-0">
+                            <img class="card-img-top"
+                                 style="height:180px;object-fit:cover"
+                                 th:src="${c.thumbnail != null and !#strings.isEmpty(c.thumbnail) ? c.thumbnail : '/img/user.jpg'}"
+                                 alt="Course thumbnail">
+                            <div class="card-body">
+                                <h6 class="card-title mb-1" th:text="${c.title}">Course title</h6>
+                                <p class="text-muted small mb-1"
+                                   th:text="${c.createdBy != null ? 'Created by: ' + c.createdBy.fullName : 'Created by: Unknown'}">Created by</p>
+                                <p class="text-muted small mb-2"
+                                   th:text="${c.instructor != null ? 'Instructor: ' + c.instructor.fullName : 'Instructor: Unknown'}">Instructor</p>
+                                <p class="card-text text-muted mb-3"
+                                   th:text="${c.description != null and !#strings.isEmpty(c.description) ? c.description : 'No description'}">
+                                    Description
+                                </p>
+                                <a class="btn btn-primary btn-sm w-100"
+                                   th:href="@{/my-courses/{courseId}/lesson-view(courseId=${c.id})}">View Lessons</a>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="text-light" th:if="${myCourses == null or #lists.isEmpty(myCourses)}">
-                    You have no approved courses yet.
+                    <span th:if="${viewMode == 'enrollment'}">No approved courses found. Please check enrollment status (APPROVED).</span>
+                    <span th:if="${viewMode == 'course'}">No managed courses found for this account.</span>
                 </div>
 
                 <nav class="mt-4" th:if="${totalPages != null and totalPages > 1}">

@@ -96,7 +96,9 @@
               <td>
                 <div class="d-flex align-items-center gap-2">
                   <i th:if="${course.isFeatured}" class="fa fa-star text-warning" title="Featured Course"></i>
-                  <span class="fw-bold text-white" th:text="${course.title}">Course Name</span>
+                  <a class="fw-bold text-white text-decoration-none"
+                     th:href="@{/courses/{id}(id=${course.id})}"
+                     th:text="${course.title}">Course Name</a>
                 </div>
               </td>
 

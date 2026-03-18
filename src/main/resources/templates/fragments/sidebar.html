@@ -42,14 +42,16 @@
     </div>
 
     <div class="navbar-nav w-100">
-      <a th:href="@{/courses}" class="nav-item nav-link"><i class="fa fa-book me-2"></i>Courses</a>
+      <a th:href="@{/home(section='courses')}" class="nav-item nav-link"><i class="fa fa-book me-2"></i>Courses</a>
       <a href="#" class="nav-item nav-link"><i class="fa fa-pen-nib me-2"></i>Blogs</a>
 
       <a href="#" class="nav-item nav-link"
          th:if="${session.roleNames != null and #lists.contains(session.roleNames, 'Marketing')}">
         <i class="fa fa-file-alt me-2"></i>Post List
       </a>
-
+      <a th:href="@{/my-courses}" class="nav-item nav-link">
+        <i class="fa fa-graduation-cap me-2"></i>My Courses
+      </a>
       <a th:href="@{/enroll/my-list}"
          class="nav-item nav-link">
         <i class="fa fa-clipboard-list me-2"></i>My Enrollment
