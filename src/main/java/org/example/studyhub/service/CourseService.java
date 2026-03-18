@@ -11,6 +11,7 @@ public interface CourseService {
     List<Course> getAllCourses();
     List<Course> findPublicCourses(String keyword, Long categoryId);
     Page<Course> findPublicCoursesPaged(String keyword, Long categoryId, int page, int size);
+    Course getCourseDetailForPublic(Long id);
     List<Course> getActiveCoursesByStatus();
     List<Course> getCoursesByInstructor(Long instructorId);
     //CRUD danh sách
@@ -23,4 +24,5 @@ public interface CourseService {
     // Entity conversion
     CourseDTO convertToDTO(Course course);
     Course convertToEntity(CourseDTO courseDTO);
+
 }

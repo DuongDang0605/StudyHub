@@ -49,7 +49,9 @@
          th:if="${session.roleNames != null and #lists.contains(session.roleNames, 'Marketing')}">
         <i class="fa fa-file-alt me-2"></i>Post List
       </a>
-
+      <a th:href="@{/my-courses}" class="nav-item nav-link">
+        <i class="fa fa-graduation-cap me-2"></i>My Courses
+      </a>
       <a th:href="@{/enroll/my-list}"
          class="nav-item nav-link">
         <i class="fa fa-clipboard-list me-2"></i>My Enrollment

@@ -206,4 +206,8 @@ public class CourseServiceImpl implements CourseService {
 
         return course;
     }
+    @Override
+    public Course getCourseDetailForPublic(Long id) {
+        return courseRepository.findByIdAndStatus(id, "PUBLISHED").orElse(null);
+    }
 }

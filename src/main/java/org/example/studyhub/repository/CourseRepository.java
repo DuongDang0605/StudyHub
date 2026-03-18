@@ -51,6 +51,33 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
                                         Pageable pageable);
     List<Course> findAllByStatus(String status);
     Optional<Course> findByEnrollmentsId(Long enrollmentsId);
-
     List<Course> findByInstructor_Id(Long instructorId);
+    Optional<Course> findByIdAndStatus(Long id, String status);
+
+    @Query(value = """
+    SELECT c FROM Course c
+    WHERE (:keywordPattern = '' OR LOWER(c.title) LIKE :keywordPattern)
+    ORDER BY c.createdAt DESC
+    """,
+            countQuery = """
+    SELECT COUNT(c) FROM Course c
+    WHERE (:keywordPattern = '' OR LOWER(c.title) LIKE :keywordPattern)
+    """)
+    Page<Course> findAllForMyCourses(@Param("keywordPattern") String keywordPattern, Pageable pageable);
+
+    @Query(value = """
+    SELECT c FROM Course c
+    WHERE (c.createdBy.id = :userId OR c.instructor.id = :userId)
+      AND (:keywordPattern = '' OR LOWER(c.title) LIKE :keywordPattern)
+    ORDER BY c.createdAt DESC
+    """,
+            countQuery = """
+    SELECT COUNT(c) FROM Course c
+    WHERE (c.createdBy.id = :userId OR c.instructor.id = :userId)
+      AND (:keywordPattern = '' OR LOWER(c.title) LIKE :keywordPattern)
+    """)
+    Page<Course> findManagedForMyCourses(@Param("userId") Long userId,
+                                         @Param("keywordPattern") String keywordPattern,
+                                         Pageable pageable);
+
 }

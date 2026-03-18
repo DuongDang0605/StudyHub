@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Lesson View</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <link th:href="@{/img/favicon.ico}" rel="icon">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container-fluid position-relative d-flex p-0">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <div class="content">
+        <div th:replace="~{fragments/header :: header}"></div>
+
+        <div class="container-fluid pt-4 px-4">
+            <div class="bg-secondary rounded p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="text-white mb-0" th:text="${course != null ? course.title : 'Course'}">Course</h5>
+                    <a th:href="@{/my-courses}" class="btn btn-outline-light btn-sm">Back to My Courses</a>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="bg-dark rounded p-3">
+                            <h6 class="text-white mb-3">Course Content</h6>
+
+                            <div th:if="${chapters == null or #lists.isEmpty(chapters)}" class="text-muted small">
+                                No chapters available.
+                            </div>
+
+                            <div th:each="ch : ${chapters}" class="mb-3">
+                                <div class="fw-bold text-info mb-2" th:text="${ch.orderNum + '. ' + ch.title}">Chapter</div>
+                                <div class="list-group">
+                                    <a class="list-group-item list-group-item-action bg-secondary text-light border-0 mb-1"
+                                       th:classappend="${selectedLesson != null and lesson.id == selectedLesson.id} ? 'active'"
+                                       th:each="lesson : ${ch.lessons}"
+                                       th:text="${lesson.orderNum + '. ' + lesson.title}"
+                                       th:href="@{/my-courses/{courseId}/lesson-view(courseId=${course.id},lessonId=${lesson.id})}">
+                                        Lesson
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="bg-dark rounded p-3 h-100">
+                            <div th:if="${selectedLesson == null}" class="text-muted">
+                                No lesson selected.
+                            </div>
+
+                            <div th:if="${selectedLesson != null}">
+                                <h5 class="text-white mb-2" th:text="${selectedLesson.title}">Lesson title</h5>
+                                <p class="text-muted small mb-3"
+                                   th:text="${'Type: ' + selectedLesson.contentType + ' | Duration: ' + (selectedLesson.durationMinutes != null ? selectedLesson.durationMinutes : 0) + ' mins'}">
+                                    Lesson meta
+                                </p>
+
+                                <div th:if="${selectedLesson.contentType == 'VIDEO'}">
+                                    <div class="ratio ratio-16x9 mb-3" th:if="${selectedLesson.contentUrl != null and !#strings.isEmpty(selectedLesson.contentUrl)}">
+                                        <iframe th:src="${selectedLesson.contentUrl}" allowfullscreen></iframe>
+                                    </div>
+                                    <a class="btn btn-outline-info btn-sm"
+                                       th:if="${selectedLesson.contentUrl != null and !#strings.isEmpty(selectedLesson.contentUrl)}"
+                                       th:href="${selectedLesson.contentUrl}" target="_blank">Open Video in new tab</a>
+                                </div>
+
+                                <div th:if="${selectedLesson.contentType == 'PDF'}">
+                                    <a class="btn btn-primary btn-sm"
+                                       th:if="${selectedLesson.contentUrl != null and !#strings.isEmpty(selectedLesson.contentUrl)}"
+                                       th:href="${selectedLesson.contentUrl}" target="_blank">Open PDF</a>
+                                </div>
+
+                                <div th:if="${selectedLesson.contentType == 'TEXT'}" class="text-light"
+                                     th:text="${selectedLesson.contentText != null and !#strings.isEmpty(selectedLesson.contentText) ? selectedLesson.contentText : 'No text content.'}">
+                                    Text content
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/footer :: footer}"></div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

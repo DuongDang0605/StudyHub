@@ -23,7 +23,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "/lesson",
                         "/post",
                         "/setting",
-                        "setting"
+                        "setting",
+                        "/my-courses/**"
                 )
                 .excludePathPatterns(
                         "/home",

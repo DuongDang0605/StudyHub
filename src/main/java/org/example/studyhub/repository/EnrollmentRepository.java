@@ -55,7 +55,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
                         AND e.email IS NOT NULL
                         AND LOWER(TRIM(e.email)) = LOWER(TRIM(:userEmail)) ))
               AND TRIM(UPPER(COALESCE(e.status, ''))) = 'APPROVED'
-              AND (:keywordPattern IS NULL OR LOWER(e.course.title) LIKE :keywordPattern)
+              AND (:keywordPattern = '' OR LOWER(e.course.title) LIKE :keywordPattern)
             """)
     Page<Enrollment> findApprovedByUserId(@Param("userId") Long userId,
                                           @Param("userEmail") String userEmail,
@@ -93,4 +93,18 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     List<Enrollment> findAllWithFilter(@Param("courseId") Long courseId,
                                        @Param("status") String status,
                                        @Param("keyword") String keyword);
+
+    @Query("""
+            SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END
+            FROM Enrollment e
+            WHERE (e.user.id = :userId
+                   OR ( :userEmail IS NOT NULL
+                        AND e.email IS NOT NULL
+                        AND LOWER(TRIM(e.email)) = LOWER(TRIM(:userEmail)) ))
+              AND e.course.id = :courseId
+              AND TRIM(UPPER(COALESCE(e.status, ''))) = 'APPROVED'
+            """)
+    boolean hasApprovedEnrollmentAccess(@Param("userId") Long userId,
+                                        @Param("userEmail") String userEmail,
+                                        @Param("courseId") Long courseId);
 }
