@@ -2,6 +2,7 @@ package org.example.studyhub.controller;
 
 import java.util.List;
 
+import org.example.studyhub.annotation.RequireRole;
 import org.example.studyhub.dto.CourseDTO;
 import org.example.studyhub.model.Chapter;
 import org.example.studyhub.model.Course;
@@ -29,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin/courses")
+@RequireRole({"Admin","Manager"})
 public class AdminCourseController {
     private final CourseService courseService;
     private final UserService userService;
