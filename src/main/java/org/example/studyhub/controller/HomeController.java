@@ -28,9 +28,18 @@ public class HomeController {
     private SettingRepository settingRepository;
 
     @GetMapping
-    public String getHome(@RequestParam(defaultValue ="") String keyword, Model model) {
-        model.addAttribute("keyword",keyword);
-        model.addAttribute("publicCourses", courseService.findPublicCourses(keyword, null));
+    public String getHome(@RequestParam(defaultValue = "") String keyword,
+                          @RequestParam(defaultValue = "0") int page,
+                          @RequestParam(defaultValue = "6") int size,
+                          Model model) {
+        Page<?> coursePage = courseService.findPublicCoursesPaged(keyword, null, page, size);
+
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("publicCourses", coursePage.getContent());
+        model.addAttribute("courseCurrentPage", page);
+        model.addAttribute("courseTotalPages", coursePage.getTotalPages());
+        model.addAttribute("coursePageSize", size);
+
         return "index";
     }
 
@@ -60,6 +69,7 @@ public class HomeController {
         if (settingStatus != null && !settingStatus.isBlank()) redirectAttributes.addAttribute("settingStatus", settingStatus);
         if (settingKeyword != null && !settingKeyword.isBlank()) redirectAttributes.addAttribute("settingKeyword", settingKeyword);
 
-        return "redirect:/home";
+        return "redirect:/setting";
     }
+
 }

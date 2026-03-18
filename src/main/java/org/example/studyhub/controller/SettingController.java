@@ -132,6 +132,6 @@ public class SettingController {
         }
 
         settingRepository.save(entity);
-        return "redirect:/home?section=settings";
+        return "redirect:/setting";
     }
 }

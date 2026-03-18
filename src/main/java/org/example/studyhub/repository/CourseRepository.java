@@ -32,25 +32,32 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
     List<Course> findPublicCourses(@Param("keyword") String keyword, @Param("categoryId") Long categoryId);
 
     @Query(value = """
-    SELECT c FROM Course c
-    WHERE c.status = 'PUBLISHED'
-      AND (:keyword = '' OR LOWER(c.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
-      OR LOWER(COALESCE(c.description, '')) LIKE LOWER(CONCAT('%', :keyword, '%')))
-      AND (:categoryId IS NULL OR c.category.id = :categoryId)
-    ORDER BY c.createdAt DESC
-""",
-    countQuery = """
-    SELECT COUNT(c) FROM Course c
-    WHERE c.status = 'PUBLISHED'
-      AND (:keyword = '' OR LOWER(c.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
-      OR LOWER(COALESCE(c.description, '')) LIKE LOWER(CONCAT('%', :keyword, '%')))
-      AND (:categoryId IS NULL OR c.category.id = :categoryId)
-""")
-    Page<Course> findPublicCoursesPaged(@Param("keyword") String keyword,
+   SELECT c
+   FROM Course c
+   LEFT JOIN c.category cat
+   WHERE c.status = 'PUBLISHED'
+     AND (:keywordPattern IS NULL
+          OR LOWER(c.title) LIKE :keywordPattern
+          OR LOWER(COALESCE(c.description, '')) LIKE :keywordPattern)
+     AND (:categoryId IS NULL OR cat.id = :categoryId)
+   ORDER BY c.createdAt DESC
+   """,
+            countQuery = """
+   SELECT COUNT(c)
+   FROM Course c
+   LEFT JOIN c.category cat
+   WHERE c.status = 'PUBLISHED'
+     AND (:keywordPattern IS NULL
+          OR LOWER(c.title) LIKE :keywordPattern
+          OR LOWER(COALESCE(c.description, '')) LIKE :keywordPattern)
+     AND (:categoryId IS NULL OR cat.id = :categoryId)
+   """)
+    Page<Course> findPublicCoursesPaged(@Param("keywordPattern") String keywordPattern,
                                         @Param("categoryId") Long categoryId,
                                         Pageable pageable);
     List<Course> findAllByStatus(String status);
     Optional<Course> findByEnrollmentsId(Long enrollmentsId);
 
     List<Course> findByInstructor_Id(Long instructorId);
+
 }
