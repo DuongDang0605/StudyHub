@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -59,7 +60,7 @@ public class Enrollment {
     private BigDecimal progress = BigDecimal.ZERO;
 
     @Column(name = "completed_at")
-    private LocalDateTime completedAt;
+    private LocalDate completedAt;
 
     @Column(name = "enrolled_at", nullable = false)
     private LocalDateTime enrolledAt;

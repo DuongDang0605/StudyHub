@@ -74,7 +74,12 @@
                                 <h6 class="card-title" th:text="${course.title}"></h6>
                                 <p class="text-muted mb-1" th:text="${course.instructor != null ? 'By ' + course.instructor.fullName : 'By Unknown'}"></p>
                                 <p class="card-text text-muted" th:text="${course.description != null ? course.description : 'Không có mô tả'}"></p>
-                                <a class="btn btn-primary btn-sm" th:href="@{/courses}">Enroll Now</a>
+                                <form th:action="@{/enroll/create-and-checkout}" method="post">
+                                    <input type="hidden" name="courseId" th:value="${course.id}">
+                                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                                        <i class="fa fa-shopping-cart me-2"></i>Enroll Now
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>

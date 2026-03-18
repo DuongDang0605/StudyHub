@@ -104,23 +104,39 @@ public class EnrollmentAdminController {
     }
 
     @PostMapping("/edit/{id}")
-    public String update(@PathVariable Long id, @Valid @ModelAttribute("enrollmentDTO") EnrollmentDTO dto,
-                         BindingResult result, Model model, HttpSession session, RedirectAttributes ra) {
+    public String update(@PathVariable Long id,
+                         @Valid @ModelAttribute("enrollmentDTO") EnrollmentDTO dto,
+                         BindingResult result,
+                         Model model,
+                         HttpSession session,
+                         RedirectAttributes ra) {
+
         User currentUser = (User) session.getAttribute("loggedInUser");
-        boolean isAdmin = currentUser.getUserRoles().stream()
-                .anyMatch(ur -> ur.getRole().getName().equalsIgnoreCase("Admin"));
+        if (currentUser == null) return "redirect:/auth/login";
 
         if (result.hasErrors()) {
-            model.addAttribute("activeCourses", isAdmin ? courseService.getAllCourses() : courseService.getCoursesByInstructor(currentUser.getId()));
+            boolean isAdmin = currentUser.getUserRoles().stream()
+                    .anyMatch(ur -> ur.getRole().getName().equalsIgnoreCase("Admin")
+                            || ur.getRole().getName().equalsIgnoreCase("Manager"));
+
+            List<Course> courses;
+            if (isAdmin) {
+                courses = courseService.getAllCourses();
+            } else {
+                courses = courseService.getCoursesByInstructor(currentUser.getId());
+            }
+            model.addAttribute("activeCourses", courses);
+
             return "admin/enrollment/enrollment-form";
         }
+
         try {
             enrollmentService.updateEnrollment(id, dto);
             ra.addFlashAttribute("message", "Cập nhật thành công!");
             return "redirect:/admin/enrollments";
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
-            model.addAttribute("activeCourses", isAdmin ? courseService.getAllCourses() : courseService.getCoursesByInstructor(currentUser.getId()));
+            model.addAttribute("activeCourses", courseService.getAllCourses());
             return "admin/enrollment/enrollment-form";
         }
     }
@@ -152,16 +168,17 @@ public class EnrollmentAdminController {
     @PostMapping("/add")
     public String create(@Valid @ModelAttribute("enrollmentDTO") EnrollmentDTO dto,
                          BindingResult result, Model model, RedirectAttributes ra) {
+        // Nếu có bất kỳ lỗi nào từ DTO, result.hasErrors() sẽ là true
         if (result.hasErrors()) {
             model.addAttribute("activeCourses", courseService.getActiveCoursesByStatus());
-            return "admin/enrollment/enrollment-form";
+            return "admin/enrollment/enrollment-form"; // Trả về view để hiện tất cả lỗi
         }
         try {
             enrollmentService.createEnrollment(dto);
             ra.addFlashAttribute("message", "Thêm mới thành công!");
             return "redirect:/admin/enrollments";
         } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage()); // Truyền thông điệp lỗi sang HTML
+            model.addAttribute("error", e.getMessage());
             model.addAttribute("activeCourses", courseService.getActiveCoursesByStatus());
             return "admin/enrollment/enrollment-form";
         }
