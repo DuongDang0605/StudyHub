@@ -44,14 +44,17 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Page<Course> findPublicCoursesPaged(String keyword, Long categoryId, int page, int size) {
-        String keywordPattern = (keyword == null || keyword.isBlank())
-                ? null
-                : "%" + keyword.trim().toLowerCase() + "%";
+        String cleanKeyword = (keyword == null || keyword.isBlank())
+                ? ""
+                : keyword.trim().toLowerCase();
+
+        Long validCategoryId = (categoryId != null && categoryId > 0) ? categoryId : null;
+        int actualPage = Math.max(0, page);
 
         return courseRepository.findPublicCoursesPaged(
-                keywordPattern,
-                categoryId,
-                PageRequest.of(page, size, Sort.by("createdAt").descending())
+                cleanKeyword,
+                validCategoryId,
+                PageRequest.of(actualPage, size)
         );
     }
 

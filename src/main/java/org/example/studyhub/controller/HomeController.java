@@ -33,13 +33,11 @@ public class HomeController {
                           @RequestParam(defaultValue = "6") int size,
                           Model model) {
         Page<?> coursePage = courseService.findPublicCoursesPaged(keyword, null, page, size);
-
         model.addAttribute("keyword", keyword);
         model.addAttribute("publicCourses", coursePage.getContent());
         model.addAttribute("courseCurrentPage", page);
         model.addAttribute("courseTotalPages", coursePage.getTotalPages());
         model.addAttribute("coursePageSize", size);
-
         return "index";
     }
 

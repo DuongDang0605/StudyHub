@@ -85,7 +85,12 @@
                                     <span class="fw-bold text-primary"
                                           th:text="${#numbers.formatDecimal((course.salePrice != null ? course.salePrice : (course.listedPrice != null ? course.listedPrice : 0)), 1, 'POINT', 0, 'COMMA') + ' VND'}"></span>
                                 </p>
-                                <a class="btn btn-primary btn-sm" th:href="@{/courses}">Enroll Now</a>
+                                <form th:action="@{/enroll/create-and-checkout}" method="post">
+                                    <input type="hidden" name="courseId" th:value="${course.id}">
+                                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                                        <i class="fa fa-shopping-cart me-2"></i>Enroll Now
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
