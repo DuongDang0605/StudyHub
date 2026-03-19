@@ -137,7 +137,7 @@ public class AdminCourseController {
         try {
             System.out.println("=== UPDATE COURSE DEBUG ===");
             System.out.println("Course ID: " + id);
-            System.out.println("CourseDTO received: " + courseDTO);
+            System.out.println("Status"+ courseDTO.getStatus());
 
             courseService.updateCourse(id, courseDTO);
             System.out.println("Course updated successfully");
